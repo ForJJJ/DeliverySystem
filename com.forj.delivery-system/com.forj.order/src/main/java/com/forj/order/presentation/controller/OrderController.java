@@ -3,6 +3,7 @@ package com.forj.order.presentation.controller;
 import com.forj.order.application.dto.OrderResponseDto;
 import com.forj.order.application.service.OrderService;
 import com.forj.order.presentation.request.OrderRequestDto;
+import com.forj.order.presentation.request.OrderStatusRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,5 +58,17 @@ public class OrderController {
     ){
         orderService.deleteOrder(orderId);
     }
+
+    // 주문 상태 변경하기
+    @PutMapping("/{order_id}/status")
+    public void updateOrderStatus(
+            @PathVariable("order_id") UUID orderId,
+            @RequestHeader(value = "X-User-Id") String userId,
+            @RequestHeader(value = "X-Role") String role,
+            @RequestBody OrderStatusRequestDto requestDto
+    ){
+        orderService.updateOrderStatus(orderId,requestDto);
+    }
+
 
 }

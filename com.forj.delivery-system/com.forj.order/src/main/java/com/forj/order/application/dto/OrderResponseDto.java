@@ -1,6 +1,6 @@
 package com.forj.order.application.dto;
 
-import com.forj.order.domain.enums.OrderEnum;
+import com.forj.order.domain.enums.OrderStatusEnum;
 import com.forj.order.domain.model.Order;
 
 import java.util.UUID;
@@ -12,7 +12,7 @@ public record OrderResponseDto(
         UUID productId,
         Integer quantity,
         UUID deliveryId,
-        OrderEnum status
+        OrderStatusEnum status
 ) {
     public static OrderResponseDto fromOrder(Order order) {
         return new OrderResponseDto(

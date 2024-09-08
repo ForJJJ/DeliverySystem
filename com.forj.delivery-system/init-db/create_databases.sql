@@ -1,0 +1,10 @@
+CREATE DATABASE companies;
+CREATE DATABASE delivery_history;
+CREATE DATABASE delivery_agents;
+CREATE DATABASE slack_message;
+CREATE DATABASE products;
+CREATE DATABASE delivery;
+CREATE DATABASE hubs;
+CREATE DATABASE hub_movements;
+CREATE DATABASE orders;
+CREATE DATABASE users;

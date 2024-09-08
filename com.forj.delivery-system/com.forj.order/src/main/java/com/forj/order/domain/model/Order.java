@@ -32,6 +32,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderEnum status;
 
+    // 주문 생성
     public static Order create(
             UUID requestCompanyId,
             UUID receivingCompanyId,
@@ -48,4 +49,18 @@ public class Order {
                 .status(OrderEnum.PROGRESS)
                 .build();
     }
+
+    // 주문 내용 수정
+    public void update(
+            UUID receivingCompanyId,
+            UUID productId,
+            Integer quantity,
+            UUID deliveryId
+    ) {
+        this.receivingCompanyId = receivingCompanyId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.deliveryId = deliveryId;
+    }
+
 }

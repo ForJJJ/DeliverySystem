@@ -40,9 +40,34 @@ public class OrderService {
 
     // 주문 단건 조회
     @Transactional(readOnly = true)
-    public OrderResponseDto getOrderById(UUID orderId) {
+    public OrderResponseDto getOrderById(
+            UUID orderId
+    ) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
         return OrderResponseDto.fromOrder(order);
+    }
+
+    // 주문 전체 조회
+
+    // 주문 내용 수정
+    @Transactional
+    public OrderResponseDto updateOrder(
+            UUID orderId,
+            OrderRequestDto orderRequestDto
+    ) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+
+        order.update(
+                orderRequestDto.getReceivingCompanyId(),
+                orderRequestDto.getProductId(),
+                orderRequestDto.getQuantity(),
+                orderRequestDto.getDeliveryId()
+        );
+
+        Order savedOrder = orderRepository.save(order);
+
+        return OrderResponseDto.fromOrder(savedOrder);
     }
 }

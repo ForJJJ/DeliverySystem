@@ -35,4 +35,16 @@ public class OrderController {
     ){
         return orderService.getOrderById(orderId);
     }
+
+    // 주문 전체 조회
+    // 주문 내용 수정
+    @PatchMapping("/{order_id}")
+    public OrderResponseDto updateOrder(
+            @RequestBody OrderRequestDto orderRequestDto,
+            @PathVariable("order_id") UUID orderId,
+            @RequestHeader(value = "X-User-Id") String userId,
+            @RequestHeader(value = "X-Role") String role
+    ){
+        return orderService.updateOrder(orderId,orderRequestDto);
+    }
 }

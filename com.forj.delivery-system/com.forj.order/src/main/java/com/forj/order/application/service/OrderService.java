@@ -70,4 +70,16 @@ public class OrderService {
 
         return OrderResponseDto.fromOrder(savedOrder);
     }
+
+    @Transactional
+    public void deleteOrder(
+            UUID orderId
+    ) {
+        Order order = orderRepository.findById(orderId)
+                .filter(o -> !o.getIsdelete())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        order.setIsdelete(true);
+
+        orderRepository.save(order);
+    }
 }

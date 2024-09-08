@@ -47,4 +47,15 @@ public class OrderController {
     ){
         return orderService.updateOrder(orderId,orderRequestDto);
     }
+
+    // 주문 내역 삭제하기
+    @DeleteMapping("/{order_id}")
+    public void deleteOrder(
+            @PathVariable("order_id") UUID orderId,
+            @RequestHeader(value = "X-User-Id") String userId,
+            @RequestHeader(value = "X-Role") String role
+    ){
+        orderService.deleteOrder(orderId);
+    }
+
 }

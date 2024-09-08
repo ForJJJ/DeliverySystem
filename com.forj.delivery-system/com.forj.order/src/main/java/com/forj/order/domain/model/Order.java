@@ -1,7 +1,6 @@
 package com.forj.order.domain.model;
 
-import com.forj.order.domain.enums.OrderEnum;
-import com.forj.order.presentation.request.OrderRequestDto;
+import com.forj.order.domain.enums.OrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +29,7 @@ public class Order {
     private UUID deliveryId;
 
     @Enumerated(EnumType.STRING)
-    private OrderEnum status;
+    private OrderStatusEnum status;
 
     private Boolean isdelete;
 
@@ -48,7 +47,7 @@ public class Order {
                 .productId(productId)
                 .quantity(quantity)
                 .deliveryId(deliveryId)
-                .status(OrderEnum.PROGRESS)
+                .status(OrderStatusEnum.PROGRESS)
                 .isdelete(false)
                 .build();
     }
@@ -71,4 +70,7 @@ public class Order {
         this.isdelete = isdelete;
     }
 
+    public void setStatus(OrderStatusEnum status) {
+        this.status = status;
+    }
 }

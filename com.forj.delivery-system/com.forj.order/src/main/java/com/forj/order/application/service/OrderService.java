@@ -1,9 +1,11 @@
 package com.forj.order.application.service;
 
 import com.forj.order.application.dto.OrderResponseDto;
+import com.forj.order.domain.enums.OrderStatusEnum;
 import com.forj.order.domain.model.Order;
 import com.forj.order.domain.repostiory.OrderRepository;
 import com.forj.order.presentation.request.OrderRequestDto;
+import com.forj.order.presentation.request.OrderStatusRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -70,7 +72,7 @@ public class OrderService {
 
         return OrderResponseDto.fromOrder(savedOrder);
     }
-
+    // 주문 내역 삭제
     @Transactional
     public void deleteOrder(
             UUID orderId
@@ -78,7 +80,23 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .filter(o -> !o.getIsdelete())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+
         order.setIsdelete(true);
+
+        orderRepository.save(order);
+    }
+
+    // 주문 상태 변경하기
+    @Transactional
+    public void updateOrderStatus(
+            UUID orderId,
+            OrderStatusRequestDto requestDto
+    ){
+        Order order = orderRepository.findById(orderId)
+                .filter(o -> !o.getIsdelete())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+
+        order.setStatus(OrderStatusEnum.valueOf(requestDto.getStatus()));
 
         orderRepository.save(order);
     }

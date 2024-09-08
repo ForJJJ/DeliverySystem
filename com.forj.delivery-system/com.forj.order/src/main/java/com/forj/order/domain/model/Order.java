@@ -70,7 +70,11 @@ public class Order {
         this.isdelete = isdelete;
     }
 
+    // 주문 상태 변경을 위한 setter 생성
     public void setStatus(OrderStatusEnum status) {
         this.status = status;
     }
+
+    // 주문 취소를 위한 메서드 생성
+    public void cancelOrder(){ this.status = OrderStatusEnum.CANCELED; }
 }

@@ -100,4 +100,19 @@ public class OrderService {
 
         orderRepository.save(order);
     }
+
+    // 주문 취소 요청하기
+    @Transactional
+    public void cancelOrder(
+            UUID orderId
+    ){
+        Order order = orderRepository.findById(orderId)
+                .filter(o -> !o.getIsdelete())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        if(!order.getStatus().equals(OrderStatusEnum.PROGRESS)){
+            throw new IllegalArgumentException("이미 취소되었거나 주문완료가 된 상태입니다.");
+        }
+
+        order.cancelOrder();
+    }
 }

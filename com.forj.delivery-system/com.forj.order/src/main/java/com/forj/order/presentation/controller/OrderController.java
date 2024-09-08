@@ -70,5 +70,12 @@ public class OrderController {
         orderService.updateOrderStatus(orderId,requestDto);
     }
 
-
+    @PostMapping("/{order_id}/cancel")
+    public void cancelOrder(
+            @PathVariable("order_id") UUID orderId,
+            @RequestHeader(value = "X-User-Id") String userId,
+            @RequestHeader(value = "X-Role") String role
+    ){
+        orderService.cancelOrder(orderId);
+    }
 }

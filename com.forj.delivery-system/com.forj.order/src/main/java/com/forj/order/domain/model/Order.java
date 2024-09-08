@@ -32,6 +32,8 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderEnum status;
 
+    private Boolean isdelete;
+
     // 주문 생성
     public static Order create(
             UUID requestCompanyId,
@@ -47,6 +49,7 @@ public class Order {
                 .quantity(quantity)
                 .deliveryId(deliveryId)
                 .status(OrderEnum.PROGRESS)
+                .isdelete(false)
                 .build();
     }
 
@@ -61,6 +64,11 @@ public class Order {
         this.productId = productId;
         this.quantity = quantity;
         this.deliveryId = deliveryId;
+    }
+
+    // 주문 삭제를 위한 setter 생성
+    public void setIsdelete(boolean isdelete) {
+        this.isdelete = isdelete;
     }
 
 }

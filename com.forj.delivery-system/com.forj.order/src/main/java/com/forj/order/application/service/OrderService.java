@@ -5,8 +5,10 @@ import com.forj.order.domain.model.Order;
 import com.forj.order.domain.repostiory.OrderRepository;
 import com.forj.order.presentation.request.OrderRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -34,5 +36,13 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         return OrderResponseDto.fromOrder(savedOrder);
+    }
+
+    // 주문 단건 조회
+    @Transactional(readOnly = true)
+    public OrderResponseDto getOrderById(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        return OrderResponseDto.fromOrder(order);
     }
 }

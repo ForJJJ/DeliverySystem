@@ -6,6 +6,8 @@ import com.forj.order.presentation.request.OrderRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
@@ -22,5 +24,15 @@ public class OrderController {
     ){
 
         return orderService.createOrder(orderRequestDto,userId);
+    }
+
+    // 주문 단건 조회
+    @GetMapping("/{order_id}")
+    public OrderResponseDto getOrderById(
+            @PathVariable("order_id") UUID orderId,
+            @RequestHeader(value = "X-User-Id") String userId,
+            @RequestHeader(value = "X-Role") String role
+    ){
+        return orderService.getOrderById(orderId);
     }
 }

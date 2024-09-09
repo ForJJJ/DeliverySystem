@@ -1,12 +1,12 @@
-package com.forj.order.presentation.request;
+package com.forj.order.application.dto.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequestDto {

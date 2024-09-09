@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-public class OrderCreatedEvent implements Serializable {
+public class OrderCreatedEvent {
     private UUID orderId;
     private UUID requestCompanyId;
     private UUID receivingCompanyId;

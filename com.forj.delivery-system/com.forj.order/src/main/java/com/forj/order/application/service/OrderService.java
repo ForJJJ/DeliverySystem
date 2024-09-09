@@ -32,6 +32,7 @@ public class OrderService {
 
     private final RabbitTemplate rabbitTemplate;
 
+    // 주문 생성
     @Transactional
     public OrderResponseDto createOrder(
             OrderRequestDto orderRequestDto,
@@ -53,20 +54,11 @@ public class OrderService {
                 savedOrder.getReceivingCompanyId(),
                 savedOrder.getDeliveryId()
         );
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = null;
-        try {
-            jsonString = objectMapper.writeValueAsString(event);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (jsonString != null) {
-            rabbitTemplate.convertAndSend(deliveryQueue, jsonString);
-        }
+        rabbitTemplate.convertAndSend(deliveryQueue, event);
+
 
         return OrderResponseDto.fromOrder(savedOrder);
     }
-    // 주문 생성
 
     // 주문 단건 조회
     @Transactional(readOnly = true)

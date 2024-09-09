@@ -39,6 +39,9 @@ public class Delivery {
             UUID orderId,
             UUID startHubId,
             UUID endHubId
+//            String endAddress,
+//            UUID userId
+
     ){
         return Delivery.builder()
                 .deliveryId(deliveryId)
@@ -46,9 +49,9 @@ public class Delivery {
                 .status(DeliveryStatusEnum.READY)
                 .startHubId(startHubId)
                 .endHubId(endHubId)
-//                .endAddress(endHubId.toString())
+//                .endAddress(endAddress)
 //                .deliveryAgentId()
-//                .userId()
+//                .userId(userId)
                 .isDelete(false)
                 .build();
     }

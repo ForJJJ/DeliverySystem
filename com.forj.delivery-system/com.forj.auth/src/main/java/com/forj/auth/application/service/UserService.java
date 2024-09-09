@@ -7,7 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 //import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class UserService {
     public void signup(@Valid UserSignupRequestDto requestDto) {
 
         if (userRepository.existsByUsername(requestDto.username())) {
-            throw new IllegalArgumentException("중복된 username입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "중복된 username입니다.");
         }
 
 //        String encodedPassword = passwordEncoder.encode(requestDto.password());

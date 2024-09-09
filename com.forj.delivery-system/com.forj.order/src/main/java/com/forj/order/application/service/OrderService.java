@@ -1,12 +1,17 @@
 package com.forj.order.application.service;
 
-import com.forj.order.application.dto.OrderResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forj.order.infrastructure.messaging.OrderCreatedEvent;
+import com.forj.order.application.dto.response.OrderResponseDto;
 import com.forj.order.domain.enums.OrderStatusEnum;
 import com.forj.order.domain.model.Order;
 import com.forj.order.domain.repostiory.OrderRepository;
-import com.forj.order.presentation.request.OrderRequestDto;
-import com.forj.order.presentation.request.OrderStatusRequestDto;
+import com.forj.order.application.dto.request.OrderRequestDto;
+import com.forj.order.application.dto.request.OrderStatusRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +25,13 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    // 주문 생성
+    @Value("${message.queue.delivery}")
+    private String deliveryQueue;
+
+    private final RabbitTemplate rabbitTemplate;
+
     @Transactional
     public OrderResponseDto createOrder(
             OrderRequestDto orderRequestDto,
@@ -37,8 +47,26 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                savedOrder.getOrderId(),
+                UUID.fromString(userId),
+                savedOrder.getReceivingCompanyId(),
+                savedOrder.getDeliveryId()
+        );
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = objectMapper.writeValueAsString(event);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (jsonString != null) {
+            rabbitTemplate.convertAndSend(deliveryQueue, jsonString);
+        }
+
         return OrderResponseDto.fromOrder(savedOrder);
     }
+    // 주문 생성
 
     // 주문 단건 조회
     @Transactional(readOnly = true)

@@ -1,16 +1,16 @@
 server:
-  port: 19097
+  port: 19098
 
 spring:
   application:
-    name: order
+    name: delivery
   datasource:
     url: ${DATABASE_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -23,6 +23,5 @@ spring:
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
 message:
-  exchange: ${RABBITMQ_EXCHANGE}
   queue:
     delivery: ${RABBITMQ_QUEUE}

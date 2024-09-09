@@ -1,4 +1,4 @@
-package com.forj.order.application.dto;
+package com.forj.order.application.dto.response;
 
 import com.forj.order.domain.enums.OrderStatusEnum;
 import com.forj.order.domain.model.Order;

@@ -1,4 +1,4 @@
-package com.forj.order.infrastructure.Repository;
+package com.forj.order.infrastructure.repository;
 
 import com.forj.order.domain.model.Order;
 import com.forj.order.domain.repostiory.OrderRepository;

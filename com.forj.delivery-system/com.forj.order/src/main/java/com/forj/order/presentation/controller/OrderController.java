@@ -1,9 +1,9 @@
 package com.forj.order.presentation.controller;
 
-import com.forj.order.application.dto.OrderResponseDto;
+import com.forj.order.application.dto.response.OrderResponseDto;
 import com.forj.order.application.service.OrderService;
-import com.forj.order.presentation.request.OrderRequestDto;
-import com.forj.order.presentation.request.OrderStatusRequestDto;
+import com.forj.order.application.dto.request.OrderRequestDto;
+import com.forj.order.application.dto.request.OrderStatusRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

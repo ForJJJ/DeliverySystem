@@ -19,6 +19,12 @@ public class HubController {
 
     private final HubService hubService;
 
+    /**
+     * 허브 생성
+     * <p>마스터 권한만 접근 가능<p/>
+     * @param request 허브 생성에 필요한 데이터
+     * @return {@link HubInfoResponseDto} 객체
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_MASTER')")
     public ResponseEntity<HubInfoResponseDto> createHub(@RequestBody HubRequestDto request) {
@@ -27,6 +33,13 @@ public class HubController {
         return ResponseEntity.ok(hubService.createHub(request));
     }
 
+    /**
+     * 허브 조회
+     * <p>모든 사용자 조회 가능 - 마스터 및 서버 요청인 경우 private 정보를 포함하여 응답, 그 외 public 정보만 응답에 포함<p/>
+     * @param hubId 조회 하려는 허브 ID
+     * @param serverRequest 서버 요청 여부
+     * @return {@link HubInfoResponseDto} 객체
+     */
     @GetMapping("/{hubId}")
     public ResponseEntity<HubInfoResponseDto> getHubInfo(
             @PathVariable String hubId,
@@ -38,6 +51,12 @@ public class HubController {
         return ResponseEntity.ok(hubService.getHubInfo(hubId, isMasterOrServer));
     }
 
+    /**
+     * 모든 허브 조회
+     * <p>모든 사용자 조회 가능 - 마스터 및 서버 요청인 경우 private 정보를 포함하여 응답, 그 외 public 정보만 응답에 포함<p/>
+     * @param serverRequest 서버 요청 여부
+     * @return {@link HubListResponseDto} 객체 - List
+     */
     @GetMapping
     public ResponseEntity<HubListResponseDto> getHubsInfo(
             @RequestHeader(value = "X-Server-Request", required = false) String serverRequest
@@ -48,6 +67,13 @@ public class HubController {
         return ResponseEntity.ok(hubService.getHubsInfo(isMasterOrServer));
     }
 
+    /**
+     * 허브 수정
+     * <p>마스터 권한만 접근 가능<p/>
+     * @param hubId 수정하려는 허브 ID
+     * @param request 수정하려는 허브 데이터
+     * @return {@link HubInfoResponseDto} 객체
+     */
     @PatchMapping("/{hubId}")
     @PreAuthorize("hasAuthority('ROLE_MASTER')")
     public ResponseEntity<HubInfoResponseDto> updateHubInfo(
@@ -57,6 +83,12 @@ public class HubController {
         return ResponseEntity.ok(hubService.updateHubInfo(hubId, request));
     }
 
+    /**
+     * 허브 삭제 (비활성화)
+     * <p>마스터 권한만 접근 가능<p/>
+     * @param hubId 삭제하려는 허브 ID
+     * @return {@link Boolean}
+     */
     @DeleteMapping("/{hubId}")
     @PreAuthorize("hasAuthority('ROLE_MASTER')")
     public ResponseEntity<Boolean> deleteHub(

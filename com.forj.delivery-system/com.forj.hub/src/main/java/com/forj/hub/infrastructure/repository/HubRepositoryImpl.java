@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
 public class HubRepositoryImpl implements HubRepository {
+
     private final JPAHubRepository jpaHubRepository;
 
     @Override
@@ -29,5 +31,10 @@ public class HubRepositoryImpl implements HubRepository {
     public Hub findByIdAndIsDeletedFalse(UUID hubId) {
         return jpaHubRepository.findByIdAndIsDeletedFalse(hubId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public List<Hub> findAll() {
+        return jpaHubRepository.findAll();
     }
 }

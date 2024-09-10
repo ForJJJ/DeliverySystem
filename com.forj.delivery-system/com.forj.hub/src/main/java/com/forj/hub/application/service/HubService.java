@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,7 +28,7 @@ public class HubService {
 
     @Transactional
     @CachePut(value = "hubCache", key = "#result.id")
-    public HubCreateResponseDto createHub(HubRequestDto request) {
+    public HubInfoResponseDto createHub(HubRequestDto request) {
 
         // 좌표 가져오기 Naver Geo API
         NaverGeoPointResponseDto geoPointResponseDto = getAddressWithGeoPoint(request);
@@ -43,7 +44,7 @@ public class HubService {
 
         Hub savedHub = hubRepository.save(hub);
 
-        return new HubCreateResponseDto(
+        return new HubInfoResponseDto(
                 savedHub.getId().toString(),
                 savedHub.getName(),
                 savedHub.getAddress(),
@@ -53,21 +54,42 @@ public class HubService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "hubCache", key = "#hubId")
-    public HubResponseDto getHubInfo(String hubId) {
+    @Cacheable(value = "hubCache", key = "#isPrivate ? #hubId : 'public_' + #hubId")
+    public HubInfoResponseDto getHubInfo(String hubId, boolean isPrivate) {
 
-        log.info("Hub info from database for hubId: " + hubId);
+        log.info("Hub info from database for hubId : {}, isPrivate : {}", hubId, isPrivate);
 
         // is_deleted false
         Hub hub = hubRepository.findByIdAndIsDeletedFalse(UUID.fromString(hubId));
 
-        return new HubResponseDto(hub.getName(), hub.getAddress());
+        return getHubInfoResponseDto(isPrivate, hub);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = "hubCache", key = "#isPrivate ? 'allHubs' : 'public_allHubs'")
+    public HubListResponseDto getHubsInfo(boolean isPrivate) {
+
+        log.info("Hubs info from database, isPrivate : {}", isPrivate);
+
+        List<Hub> hubs = hubRepository.findAll();
+
+        List<HubInfoResponseDto> list =
+                hubs.stream().map(hub ->
+                        getHubInfoResponseDto(isPrivate, hub)
+                ).toList();
+
+
+        return new HubListResponseDto(list);
     }
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = "hubCache", key = "#hubId")})
-    public HubResponseDto updateHubInfo(String hubId, HubRequestDto request) {
+            @CacheEvict(cacheNames = "hubCache", key = "#hubId"),
+            @CacheEvict(cacheNames = "hubCache", key = "'allHubs'")
+    }, put = {
+            @CachePut(cacheNames = "hubCache", key = "#result.id")
+    })
+    public HubInfoResponseDto updateHubInfo(String hubId, HubRequestDto request) {
 
         Hub hub = hubRepository.findById(UUID.fromString(hubId));
 
@@ -81,7 +103,13 @@ public class HubService {
                 Double.parseDouble(addressDto.y())
         );
 
-        return new HubResponseDto(hub.getName(), hub.getAddress());
+        return new HubInfoResponseDto(
+                hub.getId().toString(),
+                hub.getName(),
+                hub.getAddress(),
+                hub.getLongitude(),
+                hub.getLatitude()
+        );
     }
 
     @Transactional
@@ -113,5 +141,19 @@ public class HubService {
             log.warn("NaverClientError : {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private HubInfoResponseDto getHubInfoResponseDto(boolean isPrivate, Hub hub) {
+        if (isPrivate) {
+            return HubInfoResponseDto.forPrivateResponse(
+                    hub.getId().toString(),
+                    hub.getName(),
+                    hub.getAddress(),
+                    hub.getLongitude(),
+                    hub.getLatitude()
+            );
+        }
+
+        return HubInfoResponseDto.forPublicResponse(hub.getName(), hub.getAddress());
     }
 }

@@ -1,8 +1,8 @@
 package com.forj.hub.presentation;
 
-import com.forj.hub.application.dto.HubInfoResponseDto;
-import com.forj.hub.application.dto.HubListResponseDto;
-import com.forj.hub.application.dto.HubRequestDto;
+import com.forj.hub.application.dto.response.HubInfoResponseDto;
+import com.forj.hub.application.dto.response.HubListResponseDto;
+import com.forj.hub.application.dto.request.HubRequestDto;
 import com.forj.hub.application.service.HubService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

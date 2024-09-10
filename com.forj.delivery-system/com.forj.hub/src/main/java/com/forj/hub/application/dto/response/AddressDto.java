@@ -1,4 +1,4 @@
-package com.forj.hub.application.dto;
+package com.forj.hub.application.dto.response;
 
 public record AddressDto(
         String roadAddress,

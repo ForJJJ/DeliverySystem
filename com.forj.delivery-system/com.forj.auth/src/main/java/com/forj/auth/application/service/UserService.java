@@ -38,7 +38,7 @@ public class UserService {
     public String login(UserLoginRequestDto requestDto) {
         User user = verifyUser(requestDto.username(), requestDto.password());
 
-        return jwtUtil.createToken(requestDto.username(), user.getRole());
+        return jwtUtil.createToken(user.getUserId(), user.getRole());
     }
 
     private User verifyUser(String username, String password) {

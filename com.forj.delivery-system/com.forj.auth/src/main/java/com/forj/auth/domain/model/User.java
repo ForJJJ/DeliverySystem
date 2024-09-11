@@ -2,6 +2,8 @@ package com.forj.auth.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +27,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
-    private Long user_id;
+    private Long userId;
 
     @Column
     private String username;
@@ -34,6 +36,7 @@ public class User {
     private String password;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
 //    @OneToOne(fetch = FetchType.LAZY)

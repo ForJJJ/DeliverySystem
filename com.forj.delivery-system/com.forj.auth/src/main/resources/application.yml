@@ -1,6 +1,6 @@
 spring:
   application:
-    name: hub
+    name: auth
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/users
@@ -25,3 +25,13 @@ eureka:
 
 server:
   port: 19092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true

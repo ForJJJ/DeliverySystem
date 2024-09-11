@@ -29,7 +29,8 @@ public class Hub extends BaseEntity {
     private List<HubMovement> arrivalHubs;
 
     @Builder(access = AccessLevel.PROTECTED)
-    public Hub(String name, String address, double longitude, double latitude) {
+    public Hub(UUID id, String name, String address, double longitude, double latitude) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.longitude = longitude;
@@ -38,6 +39,16 @@ public class Hub extends BaseEntity {
 
     public static Hub toHubEntity(String name, String address, double longitude, double latitude) {
         return Hub.builder()
+                .name(name)
+                .address(address)
+                .longitude(longitude)
+                .latitude(latitude)
+                .build();
+    }
+
+    public static Hub toHubEntityWithId(UUID id, String name, String address, double longitude, double latitude) {
+        return Hub.builder()
+                .id(id)
                 .name(name)
                 .address(address)
                 .longitude(longitude)

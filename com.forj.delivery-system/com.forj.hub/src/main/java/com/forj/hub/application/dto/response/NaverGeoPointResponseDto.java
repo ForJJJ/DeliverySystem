@@ -1,6 +1,4 @@
-package com.forj.hub.application.dto;
-
-import com.forj.hub.application.dto.AddressDto;
+package com.forj.hub.application.dto.response;
 
 import java.util.List;
 

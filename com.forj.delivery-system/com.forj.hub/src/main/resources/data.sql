@@ -18,3 +18,84 @@ values
     ('88f8b7e0-b7bc-4082-aafe-c35458cbe3fe', '2024-09-09 12:52:41.984111', 1, null, null, false, null, null, '전라남도 무안군 삼향읍 오룡길 1 전라남도청', 34.8161102, 126.4631714, '전라남도 센터'),
     ('6e0b452d-a2db-4ab2-9758-e2e7c41c9965', '2024-09-09 12:52:42.153244', 1, null, null, false, null, null, '경상북도 안동시 풍천면 도청대로 455 경상북도청', 36.5759477, 128.5056462, '경상북도 센터'),
     ('48578d51-5faf-4251-9fe4-a61a97693d72', '2024-09-09 12:52:42.403809', 1, null, null, false, null, null, '경상남도 창원시 의창구 중앙대로 300 경상남도청', 35.2377974, 128.6919403, '경상남도 센터');
+
+
+-- 서울 ↔ 경기 북부
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '서울특별시 센터'), (SELECT id FROM p_hubs WHERE name = '경기 북부 센터'), NULL, '서울특별시 센터-경기 북부 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경기 북부 센터'), (SELECT id FROM p_hubs WHERE name = '서울특별시 센터'), NULL, '경기 북부 센터-서울특별시 센터');
+
+-- 경기 북부 ↔ 경기 남부
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경기 북부 센터'), (SELECT id FROM p_hubs WHERE name = '경기 남부 센터'), NULL, '경기 북부 센터-경기 남부 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경기 남부 센터'), (SELECT id FROM p_hubs WHERE name = '경기 북부 센터'), NULL, '경기 남부 센터-경기 북부 센터');
+
+-- 경기 남부 ↔ 부산광역시
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경기 남부 센터'), (SELECT id FROM p_hubs WHERE name = '부산광역시 센터'), NULL, '경기 남부 센터-부산광역시 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '부산광역시 센터'), (SELECT id FROM p_hubs WHERE name = '경기 남부 센터'), NULL, '부산광역시 센터-경기 남부 센터');
+
+-- 부산광역시 ↔ 대구광역시
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '부산광역시 센터'), (SELECT id FROM p_hubs WHERE name = '대구광역시 센터'), NULL, '부산광역시 센터-대구광역시 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '대구광역시 센터'), (SELECT id FROM p_hubs WHERE name = '부산광역시 센터'), NULL, '대구광역시 센터-부산광역시 센터');
+
+-- 대구광역시 ↔ 인천광역시
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '대구광역시 센터'), (SELECT id FROM p_hubs WHERE name = '인천광역시 센터'), NULL, '대구광역시 센터-인천광역시 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '인천광역시 센터'), (SELECT id FROM p_hubs WHERE name = '대구광역시 센터'), NULL, '인천광역시 센터-대구광역시 센터');
+
+-- 인천광역시 ↔ 광주광역시
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '인천광역시 센터'), (SELECT id FROM p_hubs WHERE name = '광주광역시 센터'), NULL, '인천광역시 센터-광주광역시 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '광주광역시 센터'), (SELECT id FROM p_hubs WHERE name = '인천광역시 센터'), NULL, '광주광역시 센터-인천광역시 센터');
+
+-- 광주광역시 ↔ 대전광역시
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '광주광역시 센터'), (SELECT id FROM p_hubs WHERE name = '대전광역시 센터'), NULL, '광주광역시 센터-대전광역시 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '대전광역시 센터'), (SELECT id FROM p_hubs WHERE name = '광주광역시 센터'), NULL, '대전광역시 센터-광주광역시 센터');
+
+-- 대전광역시 ↔ 울산광역시
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '대전광역시 센터'), (SELECT id FROM p_hubs WHERE name = '울산광역시 센터'), NULL, '대전광역시 센터-울산광역시 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '울산광역시 센터'), (SELECT id FROM p_hubs WHERE name = '대전광역시 센터'), NULL, '울산광역시 센터-대전광역시 센터');
+
+-- 울산광역시 ↔ 세종특별자치도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '울산광역시 센터'), (SELECT id FROM p_hubs WHERE name = '세종특별자치도 센터'), NULL, '울산광역시 센터-세종특별자치도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '세종특별자치도 센터'), (SELECT id FROM p_hubs WHERE name = '울산광역시 센터'), NULL, '세종특별자치도 센터-울산광역시 센터');
+
+-- 세종특별자치도 ↔ 강원특별자치도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '세종특별자치도 센터'), (SELECT id FROM p_hubs WHERE name = '강원특별자치도 센터'), NULL, '세종특별자치도 센터-강원특별자치도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '강원특별자치도 센터'), (SELECT id FROM p_hubs WHERE name = '세종특별자치도 센터'), NULL, '강원특별자치도 센터-세종특별자치도 센터');
+
+-- 강원특별자치도 ↔ 충청북도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '강원특별자치도 센터'), (SELECT id FROM p_hubs WHERE name = '충청북도 센터'), NULL, '강원특별자치도 센터-충청북도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '충청북도 센터'), (SELECT id FROM p_hubs WHERE name = '강원특별자치도 센터'), NULL, '충청북도 센터-강원특별자치도 센터');
+
+-- 충청북도 ↔ 충청남도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '충청북도 센터'), (SELECT id FROM p_hubs WHERE name = '충청남도 센터'), NULL, '충청북도 센터-충청남도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '충청남도 센터'), (SELECT id FROM p_hubs WHERE name = '충청북도 센터'), NULL, '충청남도 센터-충청북도 센터');
+
+-- 충청남도 ↔ 전북특별자치도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '충청남도 센터'), (SELECT id FROM p_hubs WHERE name = '전북특별자치도 센터'), NULL, '충청남도 센터-전북특별자치도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '전북특별자치도 센터'), (SELECT id FROM p_hubs WHERE name = '충청남도 센터'), NULL, '전북특별자치도 센터-충청남도 센터');
+
+-- 전북특별자치도 ↔ 전라남도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '전북특별자치도 센터'), (SELECT id FROM p_hubs WHERE name = '전라남도 센터'), NULL, '전북특별자치도 센터-전라남도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '전라남도 센터'), (SELECT id FROM p_hubs WHERE name = '전북특별자치도 센터'), NULL, '전라남도 센터-전북특별자치도 센터');
+
+-- 전라남도 ↔ 경상북도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '전라남도 센터'), (SELECT id FROM p_hubs WHERE name = '경상북도 센터'), NULL, '경상북도 센터-전라남도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경상북도 센터'), (SELECT id FROM p_hubs WHERE name = '전라남도 센터'), NULL, '전라남도 센터-경상북도 센터');
+
+-- 경상북도 ↔ 경상남도
+INSERT INTO p_hub_movements (id, is_deleted, departure_hub_id, arrival_hub_id, duration, route) VALUES
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경상북도 센터'), (SELECT id FROM p_hubs WHERE name = '경상남도 센터'), NULL, '경상남도 센터-경상북도 센터'),
+(gen_random_uuid(), false, (SELECT id FROM p_hubs WHERE name = '경상남도 센터'), (SELECT id FROM p_hubs WHERE name = '경상북도 센터'), NULL, '경상북도 센터-경상남도 센터');

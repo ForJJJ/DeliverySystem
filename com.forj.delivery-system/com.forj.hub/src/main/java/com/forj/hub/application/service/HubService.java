@@ -1,6 +1,10 @@
 package com.forj.hub.application.service;
 
-import com.forj.hub.application.dto.*;
+import com.forj.hub.application.dto.request.HubRequestDto;
+import com.forj.hub.application.dto.response.AddressDto;
+import com.forj.hub.application.dto.response.HubInfoResponseDto;
+import com.forj.hub.application.dto.response.HubListResponseDto;
+import com.forj.hub.application.dto.response.NaverGeoPointResponseDto;
 import com.forj.hub.domain.model.Hub;
 import com.forj.hub.domain.repository.HubRepository;
 import lombok.RequiredArgsConstructor;

@@ -26,7 +26,7 @@ public class HubController {
      * @return {@link HubInfoResponseDto} 객체
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_MASTER')")
+    @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<HubInfoResponseDto> createHub(@RequestBody HubRequestDto request) {
         log.info("HubCreateRequestDto : {}, {}",request.name(), request.address());
 
@@ -75,7 +75,7 @@ public class HubController {
      * @return {@link HubInfoResponseDto} 객체
      */
     @PatchMapping("/{hubId}")
-    @PreAuthorize("hasAuthority('ROLE_MASTER')")
+    @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<HubInfoResponseDto> updateHubInfo(
             @PathVariable String hubId,
             @RequestBody HubRequestDto request
@@ -90,7 +90,7 @@ public class HubController {
      * @return {@link Boolean}
      */
     @DeleteMapping("/{hubId}")
-    @PreAuthorize("hasAuthority('ROLE_MASTER')")
+    @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<Boolean> deleteHub(
             @PathVariable String hubId
     ) {

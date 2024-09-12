@@ -34,9 +34,9 @@ public class HubMovementApplicationService {
     public HubMovementInfoResponseDto createHubMovement(HubMovementRequestDto request) {
 
         HubInfoResponseDto departureHub = hubCacheService
-                .getHubInfo(request.departureHubId(), true);
+                .getHubInfo(request.departureHubId());
         HubInfoResponseDto arrivalHub = hubCacheService
-                .getHubInfo(request.arrivalHubId(), true);
+                .getHubInfo(request.arrivalHubId());
 
         String start = getStringPoint(departureHub.x(), departureHub.y());
         String goal = getStringPoint(arrivalHub.x(), arrivalHub.y());

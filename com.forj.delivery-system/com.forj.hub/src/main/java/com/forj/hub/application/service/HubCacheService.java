@@ -19,43 +19,33 @@ public class HubCacheService {
     private final HubService hubService;
 
     @Cacheable(value = "hubCache", key = "#hubId")
-    public HubInfoResponseDto getHubInfo(String hubId, boolean isPrivate) {
+    public HubInfoResponseDto getHubInfo(String hubId) {
 
-        log.info("Hub info from database for hubId : {}, isPrivate : {}", hubId, isPrivate);
+        log.info("Hub info from database for hubId : {}", hubId);
 
         Hub hub = hubService.getHubInfo(hubId);
 
-        return convertHubToDto(hub, isPrivate);
+        return convertHubToDto(hub);
     }
 
     @Cacheable(value = "hubCache", key = "'allHubs'")
-    public HubListResponseDto getHubsInfo(boolean isPrivate) {
+    public List<HubInfoResponseDto> getHubsInfo() {
 
-        log.info("Hubs info from database for isPrivate : {}", isPrivate);
+        log.info("Hubs info from database");
 
         List<Hub> hubs = hubService.getHubsInfo();
 
-        List<HubInfoResponseDto> list = hubs.stream()
-                .map(hub -> this.convertHubToDto(hub, isPrivate)).toList();
-
-        return new HubListResponseDto(list);
+        return hubs.stream()
+                .map(this::convertHubToDto).toList();
     }
 
-    private HubInfoResponseDto convertHubToDto(Hub hub, boolean isPrivate) {
-
-        if (isPrivate) {
-            return HubInfoResponseDto.forPrivateResponse(
-                    hub.getId().toString(),
-                    hub.getName(),
-                    hub.getAddress(),
-                    hub.getLongitude(),
-                    hub.getLatitude()
-            );
-        }
-
-        return HubInfoResponseDto.forPublicResponse(
+    private HubInfoResponseDto convertHubToDto(Hub hub) {
+        return HubInfoResponseDto.forPrivateResponse(
+                hub.getId().toString(),
                 hub.getName(),
-                hub.getAddress()
+                hub.getAddress(),
+                hub.getLongitude(),
+                hub.getLatitude()
         );
     }
 }

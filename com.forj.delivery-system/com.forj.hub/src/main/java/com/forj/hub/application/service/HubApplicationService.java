@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,12 +45,25 @@ public class HubApplicationService {
 
     public HubInfoResponseDto getHubInfo(String hubId, boolean isPrivate) {
 
-        return hubCacheService.getHubInfo(hubId, isPrivate);
+        HubInfoResponseDto hubInfo = hubCacheService.getHubInfo(hubId);
+
+        if (isPrivate) {
+            return hubInfo;
+        }
+
+        return forPublicResponse(hubInfo);
     }
 
     public HubListResponseDto getHubsInfo(boolean isPrivate) {
 
-        return hubCacheService.getHubsInfo(isPrivate);
+        List<HubInfoResponseDto> hubsInfo = hubCacheService.getHubsInfo();
+
+        if (isPrivate) {
+            new HubListResponseDto(hubsInfo);
+        }
+
+        return new HubListResponseDto(
+                hubsInfo.stream().map(this::forPublicResponse).toList());
     }
 
     @Caching(evict = {
@@ -107,6 +122,13 @@ public class HubApplicationService {
                 hub.getAddress(),
                 hub.getLongitude(),
                 hub.getLatitude()
+        );
+    }
+
+    private HubInfoResponseDto forPublicResponse(HubInfoResponseDto hubInfo) {
+        return HubInfoResponseDto.forPublicResponse(
+                hubInfo.name(),
+                hubInfo.address()
         );
     }
 }

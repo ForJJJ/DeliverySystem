@@ -1,9 +1,9 @@
 package com.forj.hub.presentation;
 
+import com.forj.hub.application.dto.request.HubRequestDto;
 import com.forj.hub.application.dto.response.HubInfoResponseDto;
 import com.forj.hub.application.dto.response.HubListResponseDto;
-import com.forj.hub.application.dto.request.HubRequestDto;
-import com.forj.hub.application.service.HubService;
+import com.forj.hub.application.service.HubApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class HubController {
 
-    private final HubService hubService;
+    private final HubApplicationService hubApplicationService;
 
     /**
      * 허브 생성
@@ -30,7 +30,7 @@ public class HubController {
     public ResponseEntity<HubInfoResponseDto> createHub(@RequestBody HubRequestDto request) {
         log.info("HubCreateRequestDto : {}, {}",request.name(), request.address());
 
-        return ResponseEntity.ok(hubService.createHub(request));
+        return ResponseEntity.ok(hubApplicationService.createHub(request));
     }
 
     /**
@@ -48,7 +48,7 @@ public class HubController {
 
         boolean isMasterOrServer = "true".equals(serverRequest) || hasMasterAuthority();
 
-        return ResponseEntity.ok(hubService.getHubInfo(hubId, isMasterOrServer));
+        return ResponseEntity.ok(hubApplicationService.getHubInfo(hubId, isMasterOrServer));
     }
 
     /**
@@ -64,7 +64,7 @@ public class HubController {
 
         boolean isMasterOrServer = "true".equals(serverRequest) || hasMasterAuthority();
 
-        return ResponseEntity.ok(hubService.getHubsInfo(isMasterOrServer));
+        return ResponseEntity.ok(hubApplicationService.getHubsInfo(isMasterOrServer));
     }
 
     /**
@@ -80,7 +80,7 @@ public class HubController {
             @PathVariable String hubId,
             @RequestBody HubRequestDto request
             ) {
-        return ResponseEntity.ok(hubService.updateHubInfo(hubId, request));
+        return ResponseEntity.ok(hubApplicationService.updateHubInfo(hubId, request));
     }
 
     /**
@@ -94,11 +94,11 @@ public class HubController {
     public ResponseEntity<Boolean> deleteHub(
             @PathVariable String hubId
     ) {
-        return ResponseEntity.ok(hubService.deleteHub(hubId));
+        return ResponseEntity.ok(hubApplicationService.deleteHub(hubId));
     }
 
     private boolean hasMasterAuthority() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                .stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_MASTER"));
+                .stream().anyMatch(auth -> auth.getAuthority().equals("MASTER"));
     }
 }

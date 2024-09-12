@@ -29,14 +29,14 @@ public class HubMovementApplicationService {
 
     private final NaverGeoClient naverGeoClient;
     private final HubMovementService hubMovementService;
-    private final HubService hubService;
+    private final HubCacheService hubCacheService;
 
     public HubMovementInfoResponseDto createHubMovement(HubMovementRequestDto request) {
 
-        HubInfoResponseDto departureHub = hubService
-                .getHubInfo(request.departureHubId(), true);
-        HubInfoResponseDto arrivalHub = hubService.
-                getHubInfo(request.arrivalHubId(), true);
+        HubInfoResponseDto departureHub = hubCacheService
+                .getHubInfo(request.departureHubId());
+        HubInfoResponseDto arrivalHub = hubCacheService
+                .getHubInfo(request.arrivalHubId());
 
         String start = getStringPoint(departureHub.x(), departureHub.y());
         String goal = getStringPoint(arrivalHub.x(), arrivalHub.y());

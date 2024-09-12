@@ -1,44 +1,47 @@
 package com.forj.hub;
 
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 
 @Slf4j
-public class SecurityContextUserFilter implements Filter {
+public class SecurityContextUserFilter extends OncePerRequestFilter {
 
     @Override
-    public void doFilter(ServletRequest request,
-                         ServletResponse response,
-                         FilterChain chain
-    ) throws IOException, ServletException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        log.info("SecurityContextUserFilter Pass : Setting test userId '1' , role 'ROLE_MASTER' ");
+        String userId = request.getHeader("X-User-Id");
+        String role = request.getHeader("X-User-Roles");
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
-        User user = new User(
-                "1",
-                "",
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_MASTER"))
-        );
+        log.info("SecurityContextUserFilter Pass : userId {}, role {} ", userId, role);
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        user,
+                        userId,
                         null,
-                        user.getAuthorities()
+                        Collections.singletonList(authority)
                 );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        log.info("Authentication in SecurityContext: {}", SecurityContextHolder.getContext().getAuthentication());
+        log.info("Authentication in SecurityContext: {}",
+                SecurityContextHolder.getContext().getAuthentication());
 
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 }
 

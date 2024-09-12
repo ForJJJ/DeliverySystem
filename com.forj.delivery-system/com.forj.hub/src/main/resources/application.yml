@@ -26,3 +26,8 @@ feign:
     id: ${CLIENT_ID}
     secret: ${CLIENT_SECRET}
     url: ${NAVER_URL}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/

@@ -20,15 +20,15 @@ spring:
         - id: order
           uri: lb://order
           predicates:
-            - Path=/api/v1/order/**
+            - Path=/api/v1/orders/**
         - id: hub
           uri: lb://hub
           predicates:
-            - Path=/api/v1/hub/**
+            - Path=/api/v1/hubs/**
         - id: delivery
           uri: lb://delivery
           predicates:
-            - Path=/api/v1/delivery/**
+            - Path=/api/v1/deliveries/**
 
       discovery:
         locator:

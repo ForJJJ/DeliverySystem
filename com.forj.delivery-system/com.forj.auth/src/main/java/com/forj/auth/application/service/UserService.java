@@ -2,18 +2,23 @@ package com.forj.auth.application.service;
 
 import com.forj.auth.application.dto.request.UserLoginRequestDto;
 import com.forj.auth.application.dto.request.UserSignupRequestDto;
+import com.forj.auth.application.dto.request.UserUpdateRequestDto;
+import com.forj.auth.application.dto.response.UserGetResponseDto;
 import com.forj.auth.domain.model.User;
 import com.forj.auth.domain.repository.UserRepository;
 import com.forj.auth.infrastructure.jwt.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -36,12 +41,32 @@ public class UserService {
     }
 
     public String login(UserLoginRequestDto requestDto) {
-        User user = verifyUser(requestDto.username(), requestDto.password());
+        User user = verifyUsername(requestDto.username(), requestDto.password());
 
         return jwtUtil.createToken(user.getUserId(), user.getRole());
     }
 
-    private User verifyUser(String username, String password) {
+    public UserGetResponseDto getUser(Long userId) {
+        User user = verifyByUserId(userId);
+
+        return UserGetResponseDto.fromEntity(user);
+    }
+
+    @Transactional
+    public void updateUser(Long userId, UserUpdateRequestDto requestDto) {
+        User user = verifyByUserId(userId);
+
+        if (requestDto.password() != null) {
+            String encodedNewPassword = passwordEncoder.encode(requestDto.password());
+            user.updatePassword(encodedNewPassword);
+        }
+
+        user.updateUsername(requestDto.username());
+
+        userRepository.save(user);
+    }
+
+    private User verifyUsername(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."));
 
@@ -50,6 +75,21 @@ public class UserService {
         }
 
         return user;
+    }
+
+    private User verifyByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."));
+
+        if (!user.getUserId().equals(getCurrentUserId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 정보만 접근 가능합니다.");
+        }
+
+        return user;
+    }
+
+    private Long getCurrentUserId() {
+        return Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
 }

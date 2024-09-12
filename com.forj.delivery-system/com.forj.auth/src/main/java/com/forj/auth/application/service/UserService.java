@@ -4,11 +4,15 @@ import com.forj.auth.application.dto.request.UserLoginRequestDto;
 import com.forj.auth.application.dto.request.UserSignupRequestDto;
 import com.forj.auth.application.dto.request.UserUpdateRequestDto;
 import com.forj.auth.application.dto.response.UserGetResponseDto;
+import com.forj.auth.application.dto.response.UserSearchResponseDto;
 import com.forj.auth.domain.model.User;
+import com.forj.auth.domain.model.UserRole;
 import com.forj.auth.domain.repository.UserRepository;
 import com.forj.auth.infrastructure.jwt.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,6 +68,22 @@ public class UserService {
         user.updateUsername(requestDto.username());
 
         userRepository.save(user);
+    }
+
+    public Page<UserSearchResponseDto> searchUser(String usernameKeyword, String roleKeyword, Pageable pageable) {
+        if (usernameKeyword != null && roleKeyword != null) {
+            return userRepository.findByUsernameContainingAndRole(usernameKeyword, UserRole.valueOf(roleKeyword), pageable)
+                    .map(UserSearchResponseDto::fromEntity);
+        } else if (usernameKeyword != null) {
+            return userRepository.findByUsernameContaining(usernameKeyword, pageable)
+                    .map(UserSearchResponseDto::fromEntity);
+        } else if (roleKeyword != null) {
+            return userRepository.findByRole(UserRole.valueOf(roleKeyword), pageable)
+                    .map(UserSearchResponseDto::fromEntity);
+        } else {
+            return userRepository.findAll(pageable)
+                    .map(UserSearchResponseDto::fromEntity);
+        }
     }
 
     private User verifyUsername(String username, String password) {

@@ -1,6 +1,7 @@
-package com.forj.auth.application.dto.request;
+package com.forj.delivery_agent.application.dto.request;
 
-import com.forj.auth.domain.model.DeliveryAgentRole;
+
+import com.forj.delivery_agent.domain.model.DeliveryAgentRole;
 
 import java.util.UUID;
 

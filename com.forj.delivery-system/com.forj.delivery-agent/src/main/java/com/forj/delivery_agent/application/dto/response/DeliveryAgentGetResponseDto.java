@@ -1,7 +1,7 @@
-package com.forj.auth.application.dto.response;
+package com.forj.delivery_agent.application.dto.response;
 
-import com.forj.auth.domain.model.DeliveryAgentRole;
-import com.forj.auth.domain.model.DeliveryAgent;
+import com.forj.delivery_agent.domain.model.DeliveryAgent;
+import com.forj.delivery_agent.domain.model.DeliveryAgentRole;
 import lombok.Builder;
 
 import java.util.UUID;

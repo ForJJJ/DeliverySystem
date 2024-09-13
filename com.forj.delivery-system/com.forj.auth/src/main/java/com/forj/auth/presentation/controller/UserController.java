@@ -1,8 +1,6 @@
 package com.forj.auth.presentation.controller;
 
-import com.forj.auth.application.dto.request.DeliveryAgentRequestDto;
 import com.forj.auth.application.dto.request.UserUpdateRequestDto;
-import com.forj.auth.application.dto.response.DeliveryAgentGetResponseDto;
 import com.forj.auth.application.dto.response.UserGetResponseDto;
 import com.forj.auth.application.dto.response.UserSearchResponseDto;
 import com.forj.auth.application.service.UserService;
@@ -16,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,28 +45,6 @@ public class UserController {
                                                   @PageableDefault Pageable pageable) {
         Page<UserSearchResponseDto> users = userService.searchUser(usernameKeyword, roleKeyword, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(users);
-    }
-
-    @PostMapping("/{userId}/delivery-agent/signup")
-    @PreAuthorize("hasAuthority('DELIVERYAGENT')")
-    public ResponseEntity<Void> signupDeliveryAgent(@PathVariable Long userId,
-                                    @RequestBody DeliveryAgentRequestDto requestDto) {
-        userService.signupDeliveryAgent(userId, requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @GetMapping("/{userId}/delivery-agent")
-    @PreAuthorize("hasAuthority('DELIVERYAGENT')")
-    public ResponseEntity<DeliveryAgentGetResponseDto> getDeliveryAgent(@PathVariable Long userId) {
-        DeliveryAgentGetResponseDto deliveryAgent = userService.getDeliveryAgent(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(deliveryAgent);
-    }
-
-    @PatchMapping("/{userId}/delivery-agent")
-    @PreAuthorize("hasAuthority('DELIVERYAGENT')")
-    public ResponseEntity<Void> updateDeliveryAgent(@PathVariable Long userId, @RequestBody DeliveryAgentRequestDto requestDto) {
-        userService.updateDeliveryAgent(userId, requestDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

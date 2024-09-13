@@ -1,4 +1,4 @@
-package com.forj.auth.domain.model;
+package com.forj.delivery_agent.domain.model;
 
 public enum DeliveryAgentRole {
 

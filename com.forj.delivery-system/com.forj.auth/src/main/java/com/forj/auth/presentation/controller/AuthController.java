@@ -6,6 +6,7 @@ import com.forj.auth.application.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,15 +21,16 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public void signup(@RequestBody @Valid UserSignupRequestDto requestDto) {
+    public ResponseEntity<Void> signup(@RequestBody @Valid UserSignupRequestDto requestDto) {
         userService.signup(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody UserLoginRequestDto requestDto) {
         String token = userService.login(requestDto);
 
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .build();
     }

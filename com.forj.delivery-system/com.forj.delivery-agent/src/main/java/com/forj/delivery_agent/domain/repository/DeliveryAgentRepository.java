@@ -1,6 +1,7 @@
-package com.forj.auth.domain.repository;
+package com.forj.delivery_agent.domain.repository;
 
-import com.forj.auth.domain.model.DeliveryAgent;
+
+import com.forj.delivery_agent.domain.model.DeliveryAgent;
 
 import java.util.Optional;
 

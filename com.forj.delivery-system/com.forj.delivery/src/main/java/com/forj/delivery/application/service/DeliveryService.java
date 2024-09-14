@@ -1,7 +1,9 @@
 package com.forj.delivery.application.service;
 
 import com.forj.delivery.application.dto.response.DeliveryResponseDto;
-import com.forj.delivery.domain.model.Delivery;
+import com.forj.delivery.domain.model.company.Company;
+import com.forj.delivery.domain.model.delivery.Delivery;
+import com.forj.delivery.domain.repository.CompanyRepository;
 import com.forj.delivery.domain.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,23 +17,35 @@ import java.util.UUID;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final CompanyRepository companyRepository;
 
     // 배송 생성 -> 주문이 들어옴과 동시에 생성
     public void createDelivery(
-            UUID deliveryId,
             UUID orderId,
-            UUID startHubId,
-            UUID endHubId
+            UUID startCompanyId,
+            UUID endCompanyId,
+            UUID deliveryId
     ) {
+
+        // 출발 허브 id 찾기
+        Company startCompany = companyRepository.findById(startCompanyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 회사는 찾을 수가 없습니다."));
+        // 도착 허브 id 찾기
+        Company endCompany = companyRepository.findById(endCompanyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 회사는 찾을 수가 없습니다."));
+
+        // 추후에 배달 기사님 매핑 기능 구현하기
         Delivery delivery = Delivery.create(
                 deliveryId,
                 orderId,
-                startHubId,
-                endHubId
+                startCompany.getManagingHubId(),
+                endCompany.getManagingHubId(),
+                endCompany.getAddress()
+//                endCompany.getUserId()
         );
-        // 추후에 회사 아이디를 HubId로 바꾸는 기능 구현하기
-        // 기사님 배차 시스템은 어떻게 하지?? 기사님이 잡는 형식으로 가야하나?? VS 자동으로 배차하는 시스템으로 가야하나??
         deliveryRepository.save(delivery);
+
+        // 배송 기록 서비스에 해당 데이터도 MQ로 전송하기
     }
 
     public DeliveryResponseDto getfindById(
@@ -41,5 +55,4 @@ public class DeliveryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 배송은 찾을 수가 없습니다."));
         return DeliveryResponseDto.fromDelivery(delivery);
     }
-
 }

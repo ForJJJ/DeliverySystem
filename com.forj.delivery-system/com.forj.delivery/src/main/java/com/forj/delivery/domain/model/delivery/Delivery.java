@@ -1,4 +1,4 @@
-package com.forj.delivery.domain.model;
+package com.forj.delivery.domain.model.delivery;
 
 import com.forj.delivery.domain.enums.DeliveryStatusEnum;
 import jakarta.persistence.Entity;
@@ -27,9 +27,9 @@ public class Delivery {
     private DeliveryStatusEnum status;
     private UUID startHubId;
     private UUID endHubId;
-//    private String endAddress;
-//    private UUID deliveryAgentId;
-//    private BigInteger userId;
+    private String endAddress;
+    private UUID deliveryAgentId;
+    private BigInteger userId;
 //    private String slackId;
     private Boolean isDelete;
 
@@ -38,9 +38,9 @@ public class Delivery {
             UUID deliveryId,
             UUID orderId,
             UUID startHubId,
-            UUID endHubId
-//            String endAddress,
-//            UUID userId
+            UUID endHubId,
+            String endAddress
+//            BigInteger userId
 
     ){
         return Delivery.builder()
@@ -49,11 +49,15 @@ public class Delivery {
                 .status(DeliveryStatusEnum.READY)
                 .startHubId(startHubId)
                 .endHubId(endHubId)
-//                .endAddress(endAddress)
+                .endAddress(endAddress)
 //                .deliveryAgentId()
 //                .userId(userId)
                 .isDelete(false)
                 .build();
+    }
+
+    public void setDeliveryAgentId(UUID deliveryAgentId) {
+        this.deliveryAgentId = deliveryAgentId;
     }
 
 

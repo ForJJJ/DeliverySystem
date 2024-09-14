@@ -23,9 +23,14 @@ public class OrderApplicationQueueConfig {
     @Value("${message.queue.delivery}")
     private String queueDelivery;
 
+    @Value("${message.queue.delivery-history}")
+    private String queueDeliveryHistory;
+
     @Bean public TopicExchange exchange() { return new TopicExchange(exchange); }
 
-    @Bean public Queue queueProduct() { return new Queue(queueDelivery); }
+    @Bean public Queue queueDelivery() { return new Queue(queueDelivery); }
+    @Bean public Queue queueDeliveryHistory() { return new Queue(queueDeliveryHistory); }
 
-    @Bean public Binding bindingProduct() { return BindingBuilder.bind(queueProduct()).to(exchange()).with(queueDelivery); }
+    @Bean public Binding bindingDelivery() { return BindingBuilder.bind(queueDelivery()).to(exchange()).with(queueDelivery); }
+    @Bean public Binding bindingDeliveryHistory() { return BindingBuilder.bind(queueDeliveryHistory()).to(exchange()).with(queueDeliveryHistory); }
 }

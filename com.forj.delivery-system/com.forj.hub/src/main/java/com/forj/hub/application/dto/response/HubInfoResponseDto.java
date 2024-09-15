@@ -12,6 +12,14 @@ public record HubInfoResponseDto(
         this(null, name, address, null, null);
     }
 
+    public HubInfoResponseDto(String id, String name, String address, Double x, Double y) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.x = x;
+        this.y = y;
+    }
+
     public static HubInfoResponseDto forPublicResponse(String name, String address) {
         return new HubInfoResponseDto(name, address);
     }

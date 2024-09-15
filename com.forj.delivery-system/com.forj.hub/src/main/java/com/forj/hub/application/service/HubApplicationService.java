@@ -56,14 +56,14 @@ public class HubApplicationService {
 
     public HubListResponseDto getHubsInfo(boolean isPrivate) {
 
-        List<HubInfoResponseDto> hubsInfo = hubCacheService.getHubsInfo();
+        HubListResponseDto hubsInfo = hubCacheService.getHubsInfo();
 
         if (isPrivate) {
-            new HubListResponseDto(hubsInfo);
+            return hubsInfo;
         }
 
         return new HubListResponseDto(
-                hubsInfo.stream().map(this::forPublicResponse).toList());
+                hubsInfo.hubList().stream().map(this::forPublicResponse).toList());
     }
 
     @Caching(evict = {

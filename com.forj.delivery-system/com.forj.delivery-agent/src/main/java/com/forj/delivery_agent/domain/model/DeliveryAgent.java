@@ -1,5 +1,6 @@
 package com.forj.delivery_agent.domain.model;
 
+import com.forj.common.jpa.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class DeliveryAgent {
+public class DeliveryAgent extends BaseEntity {
 
     @Id
     @Column(name = "delivery_agent_id")

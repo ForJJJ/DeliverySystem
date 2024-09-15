@@ -23,6 +23,12 @@ public class SecurityContextUserFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String requestURI = request.getRequestURI();
+        if (requestURI.equals("/api/v1/auth/signup") || requestURI.equals("/api/v1/auth/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String userId = request.getHeader("X-User-Id");
         String role = request.getHeader("X-User-Role");
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);

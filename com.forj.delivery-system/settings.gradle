@@ -4,9 +4,10 @@ include('auth',
         'delivery',
         'hub',
         'order',
-        'server',
-        'gateway',
+//        'server',
+//        'gateway',
         'company',
+        'delivery-agent',
         'common'
 )
 
@@ -14,7 +15,8 @@ project(':auth').projectDir = file('com.forj.auth')
 project(':delivery').projectDir = file('com.forj.delivery')
 project(':hub').projectDir = file('com.forj.hub')
 project(':order').projectDir = file('com.forj.order')
-project(':server').projectDir = file('com.forj.server')
-project(':gateway').projectDir = file('com.forj.gateway')
+//project(':server').projectDir = file('com.forj.server')
+//project(':gateway').projectDir = file('com.forj.gateway')
 project(':company').projectDir = file('com.forj.company')
+project(':delivery-agent').projectDir = file('com.forj.delivery-agent')
 project(':common').projectDir = file('com.forj.common')

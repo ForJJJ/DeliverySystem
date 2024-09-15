@@ -1,7 +1,5 @@
 package com.forj.company.application.dto.response;
 
-import java.util.ArrayList;
-
 public record HubInfoResponseDto(
         String id,
         String name,

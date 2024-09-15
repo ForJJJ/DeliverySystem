@@ -11,13 +11,11 @@ public class OrderCreatedEvent {
     private UUID orderId;
     private UUID requestCompanyId;
     private UUID receivingCompanyId;
-    private UUID deliveryId;
 
-    public OrderCreatedEvent(UUID orderId, UUID requestCompanyId, UUID receivingCompanyId, UUID deliveryId) {
+    public OrderCreatedEvent(UUID orderId, UUID requestCompanyId, UUID receivingCompanyId) {
         this.orderId = orderId;
         this.requestCompanyId = requestCompanyId;
         this.receivingCompanyId = receivingCompanyId;
-        this.deliveryId = deliveryId;
     }
 
 }

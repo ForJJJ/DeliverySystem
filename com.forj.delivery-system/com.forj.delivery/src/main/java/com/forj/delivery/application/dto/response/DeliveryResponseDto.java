@@ -1,7 +1,7 @@
 package com.forj.delivery.application.dto.response;
 
 import com.forj.delivery.domain.enums.DeliveryStatusEnum;
-import com.forj.delivery.domain.model.Delivery;
+import com.forj.delivery.domain.model.delivery.Delivery;
 
 import java.util.UUID;
 

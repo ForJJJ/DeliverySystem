@@ -18,10 +18,10 @@ import java.util.UUID;
 @Builder
 public class Order {
 
+
     @Id
     @UuidGenerator
     private UUID orderId;
-
     private UUID requestCompanyId;
     private UUID receivingCompanyId;
     private UUID productId;

@@ -21,11 +21,11 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
-#feign:
-#  naver:
-#    id: ${CLIENT_ID}
-#    secret: ${CLIENT_SECRET}
-#    url: ${NAVER_URL}
+feign:
+  naver:
+    id: ${CLIENT_ID}
+    secret: ${CLIENT_SECRET}
+    url: ${NAVER_URL}
 
 eureka:
   client:

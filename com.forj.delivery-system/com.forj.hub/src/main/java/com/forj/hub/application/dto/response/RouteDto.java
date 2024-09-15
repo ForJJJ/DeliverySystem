@@ -1,6 +1,5 @@
 package com.forj.hub.application.dto.response;
 
-import java.util.Collections;
 import java.util.List;
 
 public record RouteDto(

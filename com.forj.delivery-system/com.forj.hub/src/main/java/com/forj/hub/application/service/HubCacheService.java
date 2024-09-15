@@ -29,14 +29,16 @@ public class HubCacheService {
     }
 
     @Cacheable(value = "hubCache", key = "'allHubs'")
-    public List<HubInfoResponseDto> getHubsInfo() {
+    public HubListResponseDto getHubsInfo() {
 
         log.info("Hubs info from database");
 
         List<Hub> hubs = hubService.getHubsInfo();
 
-        return hubs.stream()
+        List<HubInfoResponseDto> list = hubs.stream()
                 .map(this::convertHubToDto).toList();
+
+        return new HubListResponseDto(list);
     }
 
     private HubInfoResponseDto convertHubToDto(Hub hub) {

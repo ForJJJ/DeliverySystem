@@ -1,10 +1,10 @@
 package com.forj.hub.domain.service;
 
+import com.forj.common.security.SecurityUtil;
 import com.forj.hub.domain.model.Hub;
 import com.forj.hub.domain.repository.HubRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,12 +53,8 @@ public class HubService {
 
         Hub hub = hubRepository.findById(UUID.fromString(hubId));
 
-        hub.delete(getCurrentUserId());
+        hub.delete(SecurityUtil.getCurrentUserId());
 
         return true;
-    }
-
-    private String getCurrentUserId() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

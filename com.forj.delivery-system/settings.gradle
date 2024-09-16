@@ -8,7 +8,8 @@ include('auth',
 //        'gateway',
         'company',
         'delivery-agent',
-        'common'
+        'common',
+        'product'
 )
 
 project(':auth').projectDir = file('com.forj.auth')
@@ -20,3 +21,4 @@ project(':order').projectDir = file('com.forj.order')
 project(':company').projectDir = file('com.forj.company')
 project(':delivery-agent').projectDir = file('com.forj.delivery-agent')
 project(':common').projectDir = file('com.forj.common')
+project(':product').projectDir = file('com.forj.product')

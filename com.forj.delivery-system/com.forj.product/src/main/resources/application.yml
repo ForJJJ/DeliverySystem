@@ -1,0 +1,50 @@
+server:
+  port: 19096
+
+spring:
+  application:
+    name: product
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+feign:
+  naver:
+    id: ${CLIENT_ID}
+    secret: ${CLIENT_SECRET}
+    url: ${NAVER_URL}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+  instance:
+    preferIpAddress: true
+
+messaging:
+  exchanges:
+    default: ${RABBITMQ_DEFAULT_EXCHANGE}
+    error: ${RABBITMQ_ERROR_EXCHANGE}
+  queues:
+    product: ${RABBITMQ_PRODUCT_QUEUE}
+    delivery: ${RABBITMQ_DELIVERY_QUEUE}
+    orderError: ${RABBITMQ_ERROR_ORDER_QUEUE}
+

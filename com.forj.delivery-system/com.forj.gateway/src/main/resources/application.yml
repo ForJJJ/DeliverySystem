@@ -37,6 +37,10 @@ spring:
           uri: lb://delivery-agent
           predicates:
             - Path=/api/v1/delivery-agents/**
+        - id: product
+          uri: lb://product
+          predicates:
+            - Path=/api/v1/products/**
 
       discovery:
         locator:

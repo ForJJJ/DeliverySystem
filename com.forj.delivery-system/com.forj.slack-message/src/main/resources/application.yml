@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: slack-message
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/slack_message
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  config:
+    import:
+      - optional:classpath:application-slack.yml
+
+logging:
+  level:
+    feign: DEBUG
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+
+server:
+  port: 19102

@@ -31,6 +31,10 @@ public class SecurityContextUserFilter extends OncePerRequestFilter {
 
         String userId = request.getHeader("X-User-Id");
         String role = request.getHeader("X-User-Role");
+        if (role == null || role.trim().isEmpty()) {
+            throw new IllegalArgumentException("Role header is missing or empty");
+        }
+        System.out.println("role : " + role);
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
         logger.info("SecurityContextUserFilter Pass : userId " + userId + ", role " + role);

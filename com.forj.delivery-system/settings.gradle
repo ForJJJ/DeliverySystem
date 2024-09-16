@@ -9,7 +9,8 @@ include('auth',
         'company',
         'delivery-agent',
         'common',
-        'product'
+        'product',
+        'slack-message'
 )
 
 project(':auth').projectDir = file('com.forj.auth')
@@ -20,5 +21,6 @@ project(':order').projectDir = file('com.forj.order')
 //project(':gateway').projectDir = file('com.forj.gateway')
 project(':company').projectDir = file('com.forj.company')
 project(':delivery-agent').projectDir = file('com.forj.delivery-agent')
+project(':slack-message').projectDir = file('com.forj.slack-message')
 project(':common').projectDir = file('com.forj.common')
 project(':product').projectDir = file('com.forj.product')

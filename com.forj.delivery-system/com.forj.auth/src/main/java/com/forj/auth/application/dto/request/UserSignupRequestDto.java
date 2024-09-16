@@ -12,7 +12,8 @@ public record UserSignupRequestDto(
         @Size(min = 8, max = 15)
         @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*?_]).+$")
         String password,
-        UserRole role
+        UserRole role,
+        String slackId
 
 ) {
 

@@ -37,16 +37,16 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "slack_id")
-//    private Slack slack;
+    @Column
+    private String slackId;
 
-    public static User signup(String username, String password, UserRole role) {
+    public static User signup(String username, String password, UserRole role, String slackId) {
 
         return User.builder()
                 .username(username)
                 .password(password)
                 .role(role)
+                .slackId(slackId)
                 .build();
 
     }

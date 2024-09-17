@@ -13,7 +13,7 @@ public class ProductMessageReceiver {
     private final ProductApplicationService productApplicationService;
     private final ProductMessageProducer productMessageProducer;
 
-    @RabbitListener(queues = "${messaging.queues.product}")
+    @RabbitListener(queues = "${message.forj.queue.product}")
     public void reduceProductQuantity(ProductDeliveryMessage productDeliveryMessage) {
         try {
             productApplicationService.reduceProductQuantity(

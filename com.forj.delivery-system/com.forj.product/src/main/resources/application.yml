@@ -39,12 +39,24 @@ eureka:
   instance:
     preferIpAddress: true
 
-messaging:
-  exchanges:
-    default: ${RABBITMQ_DEFAULT_EXCHANGE}
-    error: ${RABBITMQ_ERROR_EXCHANGE}
-  queues:
-    product: ${RABBITMQ_PRODUCT_QUEUE}
-    delivery: ${RABBITMQ_DELIVERY_QUEUE}
-    orderError: ${RABBITMQ_ERROR_ORDER_QUEUE}
+message:
+  forj:
+    exchange: ${MESSAGE_FORJ_EXCHANGE}
+    queue:
+      product: ${MESSAGE_QUEUE_FORJ_PRODUCT}
+      delivery: ${MESSAGE_QUEUE_FORJ_DELIVERY}
+      delivery-history: ${MESSAGE_QUEUE_FORJ_DELIVERY_HISTORY}
+  complete:
+    exchange: ${MESSAGE_COMPLETE_EXCHANGE}
+    queue:
+      delivery: ${MESSAGE_QUEUE_COMPLETE_DELIVERY}
+      order: ${MESSAGE_QUEUE_COMPLETE_ORDER}
+  cancel:
+    exchange: ${MESSAGE_CANCEL_EXCHANGE}
+    queue:
+      product: ${MESSAGE_QUEUE_CANCEL_PRODUCT}
+  error:
+    exchange: ${MESSAGE_ERROR_EXCHANGE}
+    queue:
+      order: ${MESSAGE_QUEUE_ERROR_ORDER}
 

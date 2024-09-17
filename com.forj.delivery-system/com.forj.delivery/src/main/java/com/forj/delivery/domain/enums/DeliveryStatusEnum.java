@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum DeliveryStatusEnum {
-    READY("READY"),
+    PENDING("PENDING"),
     PROGRESS("PROGRESS"),
     COMPLETED("COMPLETED"),
     CANCELED("CANCELED");

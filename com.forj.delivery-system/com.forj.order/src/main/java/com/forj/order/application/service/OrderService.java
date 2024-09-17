@@ -42,8 +42,7 @@ public class OrderService {
                 UUID.fromString(userId),
                 orderRequestDto.getReceivingCompanyId(),
                 orderRequestDto.getProductId(),
-                orderRequestDto.getQuantity(),
-                orderRequestDto.getDeliveryId()
+                orderRequestDto.getQuantity()
         );
 
         Order savedOrder = orderRepository.save(order);
@@ -51,8 +50,7 @@ public class OrderService {
         OrderCreatedEvent event = new OrderCreatedEvent(
                 savedOrder.getOrderId(),
                 UUID.fromString(userId),
-                savedOrder.getReceivingCompanyId(),
-                savedOrder.getDeliveryId()
+                savedOrder.getReceivingCompanyId()
         );
         rabbitTemplate.convertAndSend(deliveryQueue, event);
 
@@ -134,5 +132,17 @@ public class OrderService {
         }
 
         order.cancelOrder();
+    }
+
+    // 배송쪽에서 배송id받아서 업데이트 하기
+    public void updateDeliveryId(
+            UUID orderId,
+            UUID deliveryId
+    ){
+        Order order = orderRepository.findById(orderId)
+                .filter(o -> !o.getIsdelete())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        order.updateDeliveryId(deliveryId);
+        orderRepository.save(order);
     }
 }

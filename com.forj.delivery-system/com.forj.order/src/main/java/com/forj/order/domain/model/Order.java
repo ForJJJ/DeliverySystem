@@ -38,15 +38,13 @@ public class Order {
             UUID requestCompanyId,
             UUID receivingCompanyId,
             UUID productId,
-            Integer quantity,
-            UUID deliveryId
+            Integer quantity
     ){
         return Order.builder()
                 .requestCompanyId(requestCompanyId)
                 .receivingCompanyId(receivingCompanyId)
                 .productId(productId)
                 .quantity(quantity)
-                .deliveryId(deliveryId)
                 .status(OrderStatusEnum.PROGRESS)
                 .isdelete(false)
                 .build();
@@ -77,4 +75,12 @@ public class Order {
 
     // 주문 취소를 위한 메서드 생성
     public void cancelOrder(){ this.status = OrderStatusEnum.CANCELED; }
+
+    // 배송 ID 추가하기
+    public void updateDeliveryId(
+            UUID deliveryId
+    ){
+        this.deliveryId = deliveryId;
+        this.status = OrderStatusEnum.COMPLETED;
+    }
 }

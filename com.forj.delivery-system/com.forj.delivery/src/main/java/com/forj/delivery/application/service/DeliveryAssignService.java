@@ -1,9 +1,11 @@
 package com.forj.delivery.application.service;
 
 import com.forj.delivery.application.dto.request.DriverAssignRequestDto;
+import com.forj.delivery.domain.enums.DeliveryStatusEnum;
 import com.forj.delivery.domain.model.delivery.Delivery;
 import com.forj.delivery.domain.repository.DeliveryRepository;
 import com.forj.delivery.infrastructure.messaging.DeliveryCreatedEvent;
+import com.forj.delivery.infrastructure.messaging.OrderStatusChangeEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // 추가
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,6 +27,9 @@ public class DeliveryAssignService {
 
     @Value("${message.queue.delivery-history}")
     private String deliveryHistoryQueue;
+
+    @Value("${message.queue.complete.order}")
+    private String completeOrderQueue;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -53,25 +58,35 @@ public class DeliveryAssignService {
             log.info("배송 {}에 기사 ID {}를 할당합니다.", deliveryId, deliveryAgentId);
             delivery.setDeliveryAgentId(deliveryAgentId);
             // 배송 상태 업데이트
-            // delivery.setStatus("ASSIGNED"); // 필요에 따라 주석 해제
+             delivery.setStatus(DeliveryStatusEnum.PROGRESS);
 
             // 변경 사항 저장
             deliveriesToAssign.add(delivery);
             deliveryRepository.save(delivery);
             log.info("배송 ID {}가 성공적으로 업데이트되었습니다.", deliveryId);
+
+            // 주문쪽 상태 변경 메시징 큐
+            OrderStatusChangeEvent orderEvent = new OrderStatusChangeEvent(
+                    deliveryId,
+                    delivery.getOrderId()
+            );
+
+            rabbitTemplate.convertAndSend(completeOrderQueue, orderEvent);
+            log.info("배송 생성 이벤트가 큐 {}에 발행되었습니다.", completeOrderQueue);
         }
 
         if (!deliveriesToAssign.isEmpty()) {
-            DeliveryCreatedEvent event = new DeliveryCreatedEvent(
+            DeliveryCreatedEvent DeliveryEvent = new DeliveryCreatedEvent(
                     deliveryAgentId,
                     deliveriesToAssign.get(0).getStartHubId(), // 첫 번째 배송의 시작 허브 ID
                     deliveriesToAssign.get(0).getEndHubId()    // 첫 번째 배송의 종료 허브 ID
             );
 
-            rabbitTemplate.convertAndSend(deliveryHistoryQueue, event);
+            rabbitTemplate.convertAndSend(deliveryHistoryQueue, DeliveryEvent);
             log.info("배송 생성 이벤트가 큐 {}에 발행되었습니다.", deliveryHistoryQueue);
         } else {
             log.warn("할당할 배송이 없습니다.");
         }
+
     }
 }

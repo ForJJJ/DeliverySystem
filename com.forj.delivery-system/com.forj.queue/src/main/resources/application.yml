@@ -1,0 +1,21 @@
+message:
+  forj:
+    exchange: forj
+    queue:
+      product: forj.product
+      delivery: forj.delivery
+      delivery-history: forj.delivery-history
+  complete:
+    exchange: forj.complete
+    queue:
+      delivery: forj.complete.delivery
+      order: forj.complete.order
+  cancel:
+    exchange: forj.cancel
+    queue:
+      product: forj.cancel.product
+  error:
+    exchange: forj.error
+    queue:
+      order: forj.error.order
+

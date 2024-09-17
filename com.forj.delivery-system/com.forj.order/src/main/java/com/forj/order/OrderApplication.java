@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableFeignClients
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.forj.common", "com.forj.order"})
+@ComponentScan(basePackages = {"com.forj.common", "com.forj.queue","com.forj.order"})
 public class OrderApplication {
 
 	public static void main(String[] args) {

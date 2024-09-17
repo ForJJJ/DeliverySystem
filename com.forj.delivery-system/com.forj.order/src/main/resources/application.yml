@@ -5,9 +5,9 @@ spring:
   application:
     name: order
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: 4jdelivery
+    password: 4jsystem
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,19 +18,31 @@ spring:
         use_sql_comments: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
 message:
-  exchange: ${RABBITMQ_FORJ_EXCHANGE}
-  queue:
-    product: ${RABBITMQ_FORJ_PRODUCT_QUEUE}
-    delivery-history: ${RABBITMQ_FORJ_DELIVERY_HISTORY_QUEUE}
-    complete:
-      delivery: ${RABBITMQ_COMPLETE_DELIVERY_EXCHANGE}
-      order: ${RABBITMQ_COMPLETE_ORDER_EXCHANGE}
+  forj:
+    exchange: forj
+    queue:
+      product: forj.product
+      delivery: forj.delivery
+      delivery-history: forj.delivery-history
   complete:
-    exchange: ${RABBITMQ_COMPLETE_EXCHANGE}
+    exchange: forj.complete
+    queue:
+      delivery: complete.delivery
+      order: complete.order
+  cancel:
+    exchange: forj.cancel
+    queue:
+      product: cancel.product
+  error:
+    exchange: forj.error
+    queue:
+      order: error.order
+
+
 

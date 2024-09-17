@@ -17,7 +17,7 @@ public class OrderMessageListener {
 
     private final OrderDomainService orderDomainService;
 
-    @RabbitListener(queues = "${message.queue.complete.order}")
+    @RabbitListener(queues = "${message.complete.queue.order}")
     public void completeOrder(
             OrderDeliveryCompleteMessage message
     ){
@@ -28,7 +28,7 @@ public class OrderMessageListener {
         );
     }
 
-    @RabbitListener(queues = "${message.queue.orderError}")
+    @RabbitListener(queues = "${message.error.queue.order}")
     public void orderError(
             OrderProductErrorMessage message
     ){

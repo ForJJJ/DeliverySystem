@@ -15,7 +15,7 @@ public class DeliveryMessageListener {
 
     private final DeliveryService deliveryService;
 
-    @RabbitListener(queues = "${message.queue.delivery}")
+    @RabbitListener(queues = "${message.forj.queue.delivery}")
     public void handleOrderCreatedEvent(DeliveryProductMessage message) {
             // 배송 정보 생성
             deliveryService.createDelivery(
@@ -25,7 +25,7 @@ public class DeliveryMessageListener {
             );
     }
 
-    @RabbitListener(queues = "${message.queue.complete.delivery}")
+    @RabbitListener(queues = "${message.complete.queue.delivery}")
     public void listenDeliveryComplete(DeliveryDeliveryHistoryCompleteMessage message){
         // 배송이 완료된 배달기사님 아이디 전송
         log.info("Received deliveryStatusChangeEvent: {}", message);

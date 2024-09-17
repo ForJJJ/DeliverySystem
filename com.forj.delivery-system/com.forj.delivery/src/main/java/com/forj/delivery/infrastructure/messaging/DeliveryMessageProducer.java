@@ -15,10 +15,10 @@ import java.util.UUID;
 @Slf4j
 public class DeliveryMessageProducer {
 
-    @Value("${message.queue.delivery-history}")
+    @Value("${message.forj.queue.delivery-history}")
     private String deliveryHistoryQueue;
 
-    @Value("${message.queue.complete.order}")
+    @Value("${message.complete.queue.order}")
     private String completeOrderQueue;
 
     private final RabbitTemplate rabbitTemplate;

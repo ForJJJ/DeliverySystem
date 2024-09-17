@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ProductMessageProducer {
 
-    @Value("${messaging.queues.orderError}")
+    @Value("${message.error.queue.order}")
     private String productErrorQueue;
 
-    @Value("${messaging.queues.delivery}")
+    @Value("${message.forj.queue.delivery}")
     private String deliveryQueue;
 
     private final RabbitTemplate rabbitTemplate;

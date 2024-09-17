@@ -5,7 +5,7 @@ import com.forj.delivery.application.client.CompanyClient;
 import com.forj.delivery.application.client.UserClient;
 import com.forj.delivery.application.dto.request.DeliveryUpdateRequestDto;
 import com.forj.delivery.application.dto.request.DriverAssignRequestDto;
-import com.forj.delivery.application.dto.response.CompanyResponseDto;
+import com.forj.delivery.application.dto.response.CompanyInfoResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryListResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryResponseDto;
 import com.forj.delivery.application.dto.response.UserResponseDto;
@@ -41,9 +41,9 @@ public class DeliveryService {
     ) {
 
         // 출발 허브 id 찾기
-        CompanyResponseDto startCompany = companyClient.getCompanyInfo(startCompanyId);
+        CompanyInfoResponseDto startCompany = companyClient.getCompanyInfo(startCompanyId.toString());
         // 도착 허브 id 찾기
-        CompanyResponseDto endCompany = companyClient.getCompanyInfo(endCompanyId);
+        CompanyInfoResponseDto endCompany = companyClient.getCompanyInfo(endCompanyId.toString());
         // 수신자 유저 정보 찾기
         UserResponseDto reciveUser = userClient.getUserInfo(endCompany.userId());
 

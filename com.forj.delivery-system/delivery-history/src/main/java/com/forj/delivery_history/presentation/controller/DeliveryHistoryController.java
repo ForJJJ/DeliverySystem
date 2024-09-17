@@ -13,10 +13,7 @@ public class DeliveryHistoryController {
 
     // 배송 도착 처리
     @PutMapping("/arrive")
-    public void arrivedHub(
-            @RequestHeader(value = "X-User-Id") String userId,
-            @RequestHeader(value = "X-Role") String role
-    ){
-        deliveryHistoryService.arrivedHub(userId);
+    public void arrivedHub(){
+        deliveryHistoryService.arrivedHub();
     }
 }

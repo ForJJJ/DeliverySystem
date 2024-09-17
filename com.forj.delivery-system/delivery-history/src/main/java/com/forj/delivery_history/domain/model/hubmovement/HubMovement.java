@@ -15,6 +15,8 @@ import java.util.UUID;
 public class HubMovement {
 
     @Id
+    private UUID id;
+
     @Column(name = "departure_hub_id")
     private UUID departureHubId;
 

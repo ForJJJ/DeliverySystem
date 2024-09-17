@@ -1,11 +1,9 @@
 package com.forj.delivery_history.domain.model.deliveryhistory;
 
+import com.forj.common.jpa.BaseEntity;
 import com.forj.delivery_history.domain.enums.DeliveryHistoryStatusEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -15,33 +13,46 @@ import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "p_delivery_histories")
-@Builder
 @Slf4j
-public class DeliveryHistory {
+public class DeliveryHistory extends BaseEntity {
 
     @Id
     @UuidGenerator
     private UUID deliveryHistoryId;
 
-    private UUID deliveryAgentId;
+    private Long deliveryAgentId;
     private UUID startHubId;
     private UUID endHubId;
     private Integer sequence;
 
     @Enumerated(EnumType.STRING)
     private DeliveryHistoryStatusEnum status;
-
     private Duration actualTravelTime;
 
-    private LocalDateTime createdAt;
-
+    @Builder(access = AccessLevel.PROTECTED)
+    public DeliveryHistory(
+            UUID deliveryHistoryId,
+            Long deliveryAgentId,
+            UUID startHubId,
+            UUID endHubId,
+            Integer sequence,
+            DeliveryHistoryStatusEnum status,
+            Duration actualTravelTime
+    ){
+        this.deliveryHistoryId = deliveryHistoryId;
+        this.deliveryAgentId = deliveryAgentId;
+        this.startHubId = startHubId;
+        this.endHubId = endHubId;
+        this.sequence = sequence;
+        this.status = status;
+        this.actualTravelTime = actualTravelTime;
+    }
 
 
     public static DeliveryHistory create(
-            UUID deliveryAgentId,
+            Long deliveryAgentId,
             UUID startHubId,
             UUID endHubId,
             Integer sequence,
@@ -53,18 +64,18 @@ public class DeliveryHistory {
                 .endHubId(endHubId)
                 .sequence(sequence)
                 .status(status)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 
     public void complete(
             DeliveryHistoryStatusEnum status,
-            LocalDateTime completeTime
+            LocalDateTime completeTime,
+            LocalDateTime updateTime
     ) {
         this.status = status;
 
         // Interval 생성
-        this.actualTravelTime = Duration.between(this.createdAt, completeTime);
+        this.actualTravelTime = Duration.between(updateTime, completeTime);
 
         // 포맷팅된 문자열 생성
         String formattedTravelTime = formatTravelTime(this.actualTravelTime);
@@ -75,7 +86,6 @@ public class DeliveryHistory {
             DeliveryHistoryStatusEnum status
     ){
         this.status = status;
-        this.createdAt = LocalDateTime.now();
     }
 
     // Duration을 포맷팅하는 메서드

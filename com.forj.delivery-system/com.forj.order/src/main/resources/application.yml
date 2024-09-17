@@ -22,7 +22,15 @@ spring:
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
+
 message:
-  exchange: ${RABBITMQ_EXCHANGE}
+  exchange: ${RABBITMQ_FORJ_EXCHANGE}
   queue:
-    delivery: ${RABBITMQ_QUEUE}
+    product: ${RABBITMQ_FORJ_PRODUCT_QUEUE}
+    delivery-history: ${RABBITMQ_FORJ_DELIVERY_HISTORY_QUEUE}
+    complete:
+      delivery: ${RABBITMQ_COMPLETE_DELIVERY_EXCHANGE}
+      order: ${RABBITMQ_COMPLETE_ORDER_EXCHANGE}
+  complete:
+    exchange: ${RABBITMQ_COMPLETE_EXCHANGE}
+

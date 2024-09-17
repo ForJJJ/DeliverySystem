@@ -1,15 +1,15 @@
 server:
-  port: 19098
+  port: 19099
 
 spring:
   application:
-    name: delivery
+    name: delivery-history
   datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/delivery
+    jdbc-url: jdbc:postgresql://localhost:5432/deliveryhistory
     username: 4jdelivery
     password: 4jsystem
   second-datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/company
+    jdbc-url: jdbc:postgresql://localhost:5432/hub
     username: 4jdelivery
     password: 4jsystem
 

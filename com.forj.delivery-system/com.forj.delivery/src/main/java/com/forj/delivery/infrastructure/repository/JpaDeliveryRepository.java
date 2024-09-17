@@ -1,6 +1,6 @@
-package com.forj.delivery.infrastructure.repository.delivery;
+package com.forj.delivery.infrastructure.repository;
 
-import com.forj.delivery.domain.model.delivery.Delivery;
+import com.forj.delivery.domain.model.Delivery;
 import com.forj.delivery.domain.repository.DeliveryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 

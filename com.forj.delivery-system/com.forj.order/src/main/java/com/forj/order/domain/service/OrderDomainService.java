@@ -71,7 +71,7 @@ public class OrderDomainService {
         Order order = getOrder(orderId);
         log.info("[Order : OrderDomainService] 주문 내용 수정");
 
-        if (!(order.getStatus() == OrderStatusEnum.PROGRESS)){
+        if (!order.getStatus().equals(OrderStatusEnum.PROGRESS)){
             log.info("[Order : OrderDomainService] 주문 수정 불가 현재 상태 : {}",order.getStatus());
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"해당 주문건은 수정할 수 없습니다.");
         }
@@ -92,7 +92,7 @@ public class OrderDomainService {
         Order order = getOrder(orderId);
         log.info("[Order : OrderDomainService] 주문 내용 삭제");
 
-        if (!(order.getStatus() == OrderStatusEnum.COMPLETED)){
+        if (!order.getStatus().equals(OrderStatusEnum.COMPLETED)){
             log.info("[Order : OrderDomainService] 주문 삭제 불가 현재 상태 : {}",order.getStatus());
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"해당 주문건은 진행중이거나 이미 취소가 되었습니다.");
         }

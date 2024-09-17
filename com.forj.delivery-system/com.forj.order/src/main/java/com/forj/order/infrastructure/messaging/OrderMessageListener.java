@@ -28,7 +28,7 @@ public class OrderMessageListener {
         );
     }
 
-    @RabbitListener(queues = "${messaging.queues.orderError}")
+    @RabbitListener(queues = "${message.queue.orderError}")
     public void orderError(
             OrderProductErrorMessage message
     ){

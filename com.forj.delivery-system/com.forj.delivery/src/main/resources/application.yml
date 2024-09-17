@@ -5,26 +5,31 @@ spring:
   application:
     name: delivery
   datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/delivery
-    username: 4jdelivery
-    password: 4jsystem
-  second-datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/company
-    username: 4jdelivery
-    password: 4jsystem
-
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
 message:
-  exchange: forj
+  exchange: ${RABBITMQ_FORJ_EXCHANGE}
   queue:
-    delivery: forj.delivery
-    delivery-history: forj.delivery-history
+    product: ${RABBITMQ_FORJ_PRODUCT_QUEUE}
+    delivery-history: ${RABBITMQ_FORJ_DELIVERY_HISTORY_QUEUE}
     complete:
-      delivery: forj.complete.delivery
-      order: forj.complete.order
+      delivery: ${RABBITMQ_COMPLETE_DELIVERY_EXCHANGE}
+      order: ${RABBITMQ_COMPLETE_ORDER_EXCHANGE}
   complete:
-    exchange: forj.complete
+    exchange: ${RABBITMQ_COMPLETE_EXCHANGE}

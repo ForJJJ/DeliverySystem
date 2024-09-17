@@ -5,19 +5,31 @@ spring:
   application:
     name: delivery-history
   datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/deliveryhistory
-    username: 4jdelivery
-    password: 4jsystem
-  second-datasource:
-    jdbc-url: jdbc:postgresql://localhost:5432/hub
-    username: 4jdelivery
-    password: 4jsystem
-
+    url: ${DATABASE_URL_DELIVERY_HISTORY}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+  instance:
+    preferIpAddress: true
+
 message:
   forj:
     exchange: ${MESSAGE_FORJ_EXCHANGE}

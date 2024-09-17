@@ -13,10 +13,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderMessageProducer {
 
-    @Value("${message.queue.product}")
+    @Value("${message.forj.queue.product}")
     private String productQueue;
 
-    @Value("${message.queue.cancel.product}")
+    @Value("${message.cancel.queue.product}")
     private String cancelProductQueue;
 
     private final RabbitTemplate rabbitTemplate;

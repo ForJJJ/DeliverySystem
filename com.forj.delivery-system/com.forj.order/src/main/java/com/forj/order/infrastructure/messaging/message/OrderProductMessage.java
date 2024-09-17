@@ -1,11 +1,12 @@
-package com.forj.order.application.dto.request;
+package com.forj.order.infrastructure.messaging.message;
 
 import java.util.UUID;
 
-public record OrderRequestDto (
+
+public record OrderProductMessage(
+        UUID orderId,
         UUID requestCompanyId,
         UUID receivingCompanyId,
         UUID productId,
         Integer quantity
-){}
-
+) {}

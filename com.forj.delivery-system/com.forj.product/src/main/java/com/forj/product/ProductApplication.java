@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableFeignClients
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.forj.common", "com.forj.product"})
+@ComponentScan(basePackages = {"com.forj.common","com.forj.queue", "com.forj.product"})
 public class ProductApplication {
 
 	public static void main(String[] args) {

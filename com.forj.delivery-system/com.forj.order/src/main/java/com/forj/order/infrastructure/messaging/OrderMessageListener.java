@@ -32,7 +32,7 @@ public class OrderMessageListener {
     public void orderError(
             OrderProductErrorMessage message
     ){
-        log.info("[Order : OrderMessageListener] queue : orderError에서 {} 수신 받았습니다.",message);
+        log.info("[Order : OrderMessageListener] queue : orderError에서 {} 수신 받았습니다.",message.errorMessage());
         orderDomainService.cancel(UUID.fromString(message.orderId()));
     }
 }

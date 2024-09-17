@@ -2,7 +2,7 @@ package com.forj.delivery.application.dto.response;
 
 import java.util.UUID;
 
-public record CompanyResponseDto(
+public record CompanyInfoResponseDto(
         UUID companyId,
         String name,
         Long userId,

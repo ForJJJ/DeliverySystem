@@ -18,20 +18,21 @@ public class ProductMessageProducer {
     private final RabbitTemplate rabbitTemplate;
 
     public void reduceQuantitySuccessNotifier(
-            ProductDeliveryMessage productDeliveryMessage
+            ProductOrderMessage message
     ) {
-        rabbitTemplate.convertAndSend(deliveryQueue, productDeliveryMessage);
+        rabbitTemplate.convertAndSend(deliveryQueue, message);
     }
 
     public void rollbackToOrder(
-            ProductDeliveryMessage productDeliveryMessage, String errorMessage
+            ProductOrderMessage message, String errorMessage
     ) {
 
-        ProductDeliveryMessage productErrorMessage = new ProductDeliveryMessage(
-                productDeliveryMessage.productId(),
-                productDeliveryMessage.companyId(),
-                productDeliveryMessage.managingHubId(),
-                productDeliveryMessage.quantity(),
+        ProductOrderErrorMessage productErrorMessage = new ProductOrderErrorMessage(
+                message.orderId(),
+                message.requestCompanyId(),
+                message.receivingCompanyId(),
+                message.productId(),
+                message.quantity(),
                 errorMessage
         );
 

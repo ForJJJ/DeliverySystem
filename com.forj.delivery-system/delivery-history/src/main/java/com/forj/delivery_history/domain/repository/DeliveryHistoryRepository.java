@@ -12,5 +12,5 @@ public interface DeliveryHistoryRepository {
     Optional<DeliveryHistory> findById(UUID deliveryHistoryId);
 
 
-    Optional<DeliveryHistory> findFirstByDeliveryAgentIdAndStatus(UUID deliveryAgentId, DeliveryHistoryStatusEnum status);
+    Optional<DeliveryHistory> findFirstByDeliveryAgentIdAndStatus(Long deliveryAgentId, DeliveryHistoryStatusEnum status);
 }

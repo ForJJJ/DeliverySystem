@@ -14,18 +14,18 @@ public class ProductMessageReceiver {
     private final ProductMessageProducer productMessageProducer;
 
     @RabbitListener(queues = "${message.forj.queue.product}")
-    public void reduceProductQuantity(ProductDeliveryMessage productDeliveryMessage) {
+    public void reduceProductQuantity(ProductOrderMessage message) {
         try {
             productApplicationService.reduceProductQuantity(
-                    productDeliveryMessage.productId(),
-                    productDeliveryMessage.quantity()
+                    message.productId().toString(),
+                    message.quantity()
             );
 
-            productMessageProducer.reduceQuantitySuccessNotifier(productDeliveryMessage);
+            productMessageProducer.reduceQuantitySuccessNotifier(message);
 
         } catch (ResponseStatusException e) {
             productMessageProducer.rollbackToOrder(
-                    productDeliveryMessage,
+                    message,
                     e.getMessage()
             );
         }

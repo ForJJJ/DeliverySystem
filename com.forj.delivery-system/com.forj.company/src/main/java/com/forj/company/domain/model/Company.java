@@ -23,13 +23,13 @@ public class Company extends BaseEntity {
     private UUID id;
 
     private String name;
-    private String userId;
-    private String managingHubId;
+    private Long userId;
+    private UUID managingHubId;
     private String address;
     private CompanyType companyType;
 
     @Builder(access = AccessLevel.PROTECTED)
-    public Company(String name, String userId, String managingHubId, String address, CompanyType companyType) {
+    public Company(String name, Long userId, UUID managingHubId, String address, CompanyType companyType) {
         this.name = name;
         this.userId = userId;
         this.managingHubId = managingHubId;
@@ -37,7 +37,7 @@ public class Company extends BaseEntity {
         this.companyType = companyType;
     }
 
-    public static Company createCompany(String name, String userId, String managingHubId, String address, CompanyType companyType) {
+    public static Company createCompany(String name, Long userId, UUID managingHubId, String address, CompanyType companyType) {
         return Company.builder()
                 .name(name)
                 .userId(userId)
@@ -53,7 +53,7 @@ public class Company extends BaseEntity {
         this.companyType = companyType;
     }
 
-    public void updateCompanyManagementHub(String managingHubId) {
+    public void updateCompanyManagementHub(UUID managingHubId) {
         this.managingHubId = managingHubId;
     }
 }

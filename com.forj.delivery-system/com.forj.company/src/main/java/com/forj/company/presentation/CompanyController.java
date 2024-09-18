@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/companies")
@@ -30,7 +32,7 @@ public class CompanyController {
 
     @GetMapping("/{companyId}")
     public ResponseEntity<CompanyInfoResponseDto> getCompanyInfo(
-            @PathVariable String companyId
+            @PathVariable UUID companyId
     ) {
 
         return ResponseEntity.ok(companyService.getCompanyInfo(companyId));
@@ -45,7 +47,7 @@ public class CompanyController {
     @PutMapping("/{companyId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUBCOMPANY')")
     public ResponseEntity<CompanyInfoResponseDto> updateCompanyInfo(
-            @PathVariable String companyId,
+            @PathVariable UUID companyId,
             @RequestBody CompanyRequestDto request
     ) {
 
@@ -55,7 +57,7 @@ public class CompanyController {
     @PatchMapping("/{companyId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUBMASTER')")
     public ResponseEntity<CompanyInfoResponseDto> updateCompanyManagementHub(
-            @PathVariable String companyId,
+            @PathVariable UUID companyId,
             @RequestBody CompanyHubUpdateRequestDto request
     ) {
 
@@ -65,7 +67,7 @@ public class CompanyController {
 
     @DeleteMapping("/{companyId}")
     @PreAuthorize("hasAuthority('MASTER')")
-    public ResponseEntity<Boolean> deleteCompany(@PathVariable String companyId) {
+    public ResponseEntity<Boolean> deleteCompany(@PathVariable UUID companyId) {
 
         return ResponseEntity.ok(companyService.deleteCompany(companyId));
     }

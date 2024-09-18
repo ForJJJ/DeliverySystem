@@ -1,8 +1,10 @@
 package com.forj.product.application.dto.request;
 
+import java.util.UUID;
+
 public record ProductRequestDto(
         String name,
-        String companyId,
+        UUID companyId,
         Integer quantity
 ) {
 }

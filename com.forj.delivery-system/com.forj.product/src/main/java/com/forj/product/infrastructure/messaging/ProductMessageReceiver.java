@@ -17,7 +17,7 @@ public class ProductMessageReceiver {
     public void reduceProductQuantity(ProductOrderMessage message) {
         try {
             productApplicationService.reduceProductQuantity(
-                    message.productId().toString(),
+                    message.productId(),
                     message.quantity()
             );
 

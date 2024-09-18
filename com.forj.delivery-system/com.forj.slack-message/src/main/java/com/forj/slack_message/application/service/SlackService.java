@@ -29,9 +29,6 @@ public class SlackService {
     @Value("${webhook.slack.bot.token}")
     private String SLACK_BOT_TOKEN;
 
-//    @Value("${webhook.slack.token}")
-//    private String slackToken;
-
     private final Slack slackClient = Slack.getInstance();
 
     // 슬렉 채널에 메시지 전송
@@ -63,7 +60,7 @@ public class SlackService {
     public void sendSlackMessage(SlackMessageRequestDto requestDto) {
         try {
 
-            UserDto userDto = userServiceClient.getSlackIdByUserId(requestDto.userId()/*, token*/);
+            UserDto userDto = userServiceClient.getSlackIdByUserId(requestDto.userId());
             String slackUserId = userDto.slackId();
             String messageText = requestDto.data().values().stream()
                     .reduce((msg1, msg2) -> msg1 + "\n" + msg2)
@@ -102,24 +99,8 @@ public class SlackService {
 //                    .build();
 //        }
 
-//    private String getUserSlackId(Long userId) {
-//        return "user-slack-id"; // Replace with actual logic
-//    }
-
     private Long getCurrentUserId() {
         return Long.parseLong(SecurityContextHolder.getContext().getAuthentication().getName());
     }
-
-//    public String getCurrentUserToken() {
-//        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-//        if (attributes != null) {
-//            HttpServletRequest request = attributes.getRequest();
-//            String authHeader = request.getHeader("Authorization");
-//            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-//                return authHeader.substring(7);
-//            }
-//        }
-//        return null;
-//    }
 
 }

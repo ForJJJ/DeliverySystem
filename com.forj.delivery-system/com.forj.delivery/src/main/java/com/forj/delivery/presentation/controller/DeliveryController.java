@@ -4,12 +4,16 @@ import com.forj.delivery.application.dto.request.DriverAssignRequestDto;
 import com.forj.delivery.application.dto.response.DeliveryListResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryResponseDto;
 import com.forj.delivery.application.service.DeliveryService;
+import com.forj.delivery.domain.model.Delivery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,7 +36,7 @@ public class DeliveryController {
     @PreAuthorize("hasAnyAuthority('MASTER')")
     public ResponseEntity<DeliveryListResponseDto> getAllDelivery(
             Pageable pageable
-    ){
+    ) {
         return ResponseEntity.ok(deliveryService.getAllDelivery(pageable));
     }
 
@@ -41,7 +45,7 @@ public class DeliveryController {
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUBCOMPANY')")
     public ResponseEntity<DeliveryResponseDto> getDeliveryByOrderId(
             @PathVariable("order_id") UUID orderId
-    ){
+    ) {
         return ResponseEntity.ok(deliveryService.getFindByOrderId(orderId));
     }
 
@@ -50,7 +54,7 @@ public class DeliveryController {
     @PreAuthorize("hasAnyAuthority('MASTER')")
     public ResponseEntity<Boolean> deleteDelivery(
             @PathVariable("delivery_id") UUID deliveryId
-    ){
+    ) {
         return ResponseEntity.ok(deliveryService.deleteDelivery(deliveryId));
     }
 
@@ -59,7 +63,22 @@ public class DeliveryController {
     @PreAuthorize("hasAnyAuthority('MASTER', 'DELIVERYAGENT')")
     public void assignDeliveries(
             @RequestBody DriverAssignRequestDto requestDto
-    ){
+    ) {
         deliveryService.assignDelivery(requestDto);
     }
+
+    @GetMapping("/{deliveryAgentId}/deliveryInfo")
+    public ResponseEntity<List<Delivery>> getDeliveriesByDeliveryAgentId(@PathVariable Long deliveryAgentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveriesByDeliveryAgentId(deliveryAgentId));
+    }
+
+    @GetMapping("/{deliveryAgentId}/deliveryCount")
+    public ResponseEntity<Long> getDeliveriesByAgentIdAndTimeRange(@PathVariable("deliveryAgentId") Long deliveryAgentId,
+                                                                   @RequestParam("hubId") UUID hubId,
+                                                                   @RequestParam("startTime") LocalDateTime startTime,
+                                                                   @RequestParam("endTime") LocalDateTime endTime) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(deliveryService.getDeliveriesByAgentIdAndTimeRange(deliveryAgentId, hubId, startTime, endTime));
+    }
+
 }

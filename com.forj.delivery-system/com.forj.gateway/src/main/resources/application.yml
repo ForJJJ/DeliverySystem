@@ -45,6 +45,10 @@ spring:
           uri: lb://slack-message
           predicates:
             - Path=/api/v1/slacks/**
+        - id: ai
+          uri: lb://ai
+          predicates:
+            - Path=/api/v1/ais/**
 
       discovery:
         locator:

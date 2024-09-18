@@ -27,14 +27,18 @@ public class OrderMessageProducer {
             UUID requestCompanyId,
             UUID receivingCompanyId,
             UUID productId,
-            Integer quantity
+            Integer quantity,
+            String userId,
+            String role
     ){
         OrderProductMessage message = new OrderProductMessage(
                 orderId,
                 requestCompanyId,
                 receivingCompanyId,
                 productId,
-                quantity
+                quantity,
+                userId,
+                role
         );
 
         rabbitTemplate.convertAndSend(productQueue,message);

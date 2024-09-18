@@ -21,7 +21,9 @@ public class DeliveryMessageListener {
             deliveryService.createDelivery(
                     message.orderId(),
                     message.requestCompanyId(),
-                    message.receivingCompanyId()
+                    message.receivingCompanyId(),
+                    message.userId(),
+                    message.role()
             );
     }
 

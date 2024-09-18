@@ -7,5 +7,7 @@ public record ProductOrderMessage(
         UUID requestCompanyId,
         UUID receivingCompanyId,
         UUID productId,
-        Integer quantity
+        Integer quantity,
+        String userId,
+        String role
 ) {}

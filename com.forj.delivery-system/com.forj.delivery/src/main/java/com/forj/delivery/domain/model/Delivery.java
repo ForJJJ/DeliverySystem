@@ -57,8 +57,7 @@ public class Delivery extends BaseEntity {
             UUID startHubId,
             UUID endHubId,
             String endAddress,
-            Long userId,
-            String slackId
+            Long userId
 
     ){
         return Delivery.builder()
@@ -68,7 +67,6 @@ public class Delivery extends BaseEntity {
                 .endHubId(endHubId)
                 .endAddress(endAddress)
                 .userId(userId)
-                .slackId(slackId)
                 .build();
     }
 

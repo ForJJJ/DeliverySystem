@@ -6,5 +6,7 @@ import java.util.UUID;
 public record DeliveryProductMessage(
         UUID orderId,
         UUID requestCompanyId,
-        UUID receivingCompanyId
+        UUID receivingCompanyId,
+        String userId,
+        String role
 ) {}

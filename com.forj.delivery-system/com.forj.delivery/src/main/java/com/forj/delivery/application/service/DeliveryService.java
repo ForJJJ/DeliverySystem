@@ -37,23 +37,22 @@ public class DeliveryService {
     public void createDelivery(
             UUID orderId,
             UUID startCompanyId,
-            UUID endCompanyId
+            UUID endCompanyId,
+            String userId,
+            String role
     ) {
-
+        log.info("현재 userId 값 : {}",userId);
         // 출발 허브 id 찾기
-        CompanyInfoResponseDto startCompany = companyClient.getCompanyInfo(startCompanyId.toString());
+        CompanyInfoResponseDto startCompany = companyClient.getCompanyInfo(role,startCompanyId.toString());
         // 도착 허브 id 찾기
-        CompanyInfoResponseDto endCompany = companyClient.getCompanyInfo(endCompanyId.toString());
-        // 수신자 유저 정보 찾기
-        UserResponseDto reciveUser = userClient.getUserInfo(endCompany.userId());
+        CompanyInfoResponseDto endCompany = companyClient.getCompanyInfo(role,endCompanyId.toString());
 
         deliveryDomainService.create(
                 orderId,
-                startCompany.managingHubId(),
-                endCompany.managingHubId(),
+                UUID.fromString(startCompany.managingHubId()),
+                UUID.fromString(endCompany.managingHubId()),
                 endCompany.address(),
-                endCompany.userId(),
-                reciveUser.slackId()
+                Long.valueOf(userId)
         );
     }
 

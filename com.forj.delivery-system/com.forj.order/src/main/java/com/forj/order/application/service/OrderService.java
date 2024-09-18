@@ -44,7 +44,9 @@ public class OrderService {
                 order.getRequestCompanyId(),
                 order.getReceivingCompanyId(),
                 order.getProductId(),
-                order.getQuantity()
+                order.getQuantity(),
+                SecurityUtil.getCurrentUserId(),
+                SecurityUtil.getCurrentUserRoles()
         );
 
         return convertOrderToDto(order);
@@ -97,7 +99,9 @@ public class OrderService {
                 order.getRequestCompanyId(),
                 order.getReceivingCompanyId(),
                 order.getProductId(),
-                order.getQuantity()
+                order.getQuantity(),
+                SecurityUtil.getCurrentUserId(),
+                SecurityUtil.getCurrentUserRoles()
         );
 
         return convertOrderToDto(order);

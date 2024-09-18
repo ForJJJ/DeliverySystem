@@ -32,16 +32,14 @@ public class DeliveryDomainService {
             UUID startHubId,
             UUID endHubId,
             String endAddress,
-            Long userId,
-            String slackId
+            Long userId
     ){
         Delivery delivery = Delivery.create(
                 orderId,
                 startHubId,
                 endHubId,
                 endAddress,
-                userId,
-                slackId
+                userId
         );
 
         log.info("[Delivery : DeliveryDomainService] 배송 생성");

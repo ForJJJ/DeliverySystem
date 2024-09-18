@@ -23,7 +23,7 @@ public class ProductService {
 
     @Transactional
     public Product createProduct(
-            String name, String productId, String managingHubId, Integer quantity
+            String name, UUID productId, UUID managingHubId, Integer quantity
     ) {
 
         Product product = Product.createProduct(
@@ -33,7 +33,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Product getProductInfo(String productId) {
+    public Product getProductInfo(UUID productId) {
 
         return getProduct(productId);
     }
@@ -53,7 +53,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Product updateProductManagementHub(String productId, String hubId) {
+    public Product updateProductManagementHub(UUID productId, UUID hubId) {
 
         Product product = getProduct(productId);
 
@@ -63,7 +63,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(String productId) {
+    public void deleteProduct(UUID productId) {
 
         Product product = getProduct(productId);
 
@@ -71,7 +71,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void reduceProductQuantity(String productId, Integer quantity) {
+    public void reduceProductQuantity(UUID productId, Integer quantity) {
 
         Product product = getProduct(productId);
         log.info("Product quantity : {}", product.getQuantity());
@@ -88,8 +88,8 @@ public class ProductService {
         product.reduceStockQuantity(quantity);
     }
 
-    private Product getProduct(String productId) {
-        return productRepository.findById(UUID.fromString(productId))
+    private Product getProduct(UUID productId) {
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }

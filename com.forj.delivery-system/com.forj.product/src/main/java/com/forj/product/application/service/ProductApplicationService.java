@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -42,7 +44,7 @@ public class ProductApplicationService {
         return convertProductToDto(product);
     }
 
-    public ProductInfoResponseDto getProductInfo(String productId) {
+    public ProductInfoResponseDto getProductInfo(UUID productId) {
 
         Product product = productService.getProductInfo(productId);
 
@@ -57,7 +59,7 @@ public class ProductApplicationService {
     }
 
     public ProductInfoResponseDto updateProductInfo(
-            String productId, ProductRequestDto request
+            UUID productId, ProductRequestDto request
     ) {
 
         Product productInfo = productService.getProductInfo(productId);
@@ -77,7 +79,7 @@ public class ProductApplicationService {
     }
 
     public ProductInfoResponseDto updateProductManagementHub(
-            String productId, ProductHubUpdateRequestDto request
+            UUID productId, ProductHubUpdateRequestDto request
     ) {
 
         String serverRequest = "true";
@@ -91,21 +93,21 @@ public class ProductApplicationService {
         return convertProductToDto(product);
     }
 
-    public Boolean deleteProduct(String productId) {
+    public Boolean deleteProduct(UUID productId) {
 
         productService.deleteProduct(productId);
 
         return true;
     }
 
-    public void reduceProductQuantity(String productId, Integer quantity) {
+    public void reduceProductQuantity(UUID productId, Integer quantity) {
 
         productService.reduceProductQuantity(productId, quantity);
     }
 
     private ProductInfoResponseDto convertProductToDto(Product product) {
         return new ProductInfoResponseDto(
-                product.getId().toString(),
+                product.getId(),
                 product.getName(),
                 product.getCompanyId(),
                 product.getManagingHubId(),

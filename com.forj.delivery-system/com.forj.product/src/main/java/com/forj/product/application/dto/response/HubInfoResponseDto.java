@@ -1,26 +1,12 @@
 package com.forj.product.application.dto.response;
 
+import java.util.UUID;
+
 public record HubInfoResponseDto(
-        String id,
+        UUID id,
         String name,
         String address,
-        Double x,
-        Double y
+        Double longitude,
+        Double latitude
 ) {
-
-    private HubInfoResponseDto(String name, String address) {
-        this(null, name, address, null, null);
-    }
-
-    public static HubInfoResponseDto forPublicResponse(String name, String address) {
-        return new HubInfoResponseDto(name, address);
-    }
-
-    public static HubInfoResponseDto forPrivateResponse(String id, String name, String address, double x, double y) {
-        return new HubInfoResponseDto(id, name, address, x, y);
-    }
-
-    public double[] getHubPoint() {
-        return new double[] {this.x, this.y};
-    }
 }

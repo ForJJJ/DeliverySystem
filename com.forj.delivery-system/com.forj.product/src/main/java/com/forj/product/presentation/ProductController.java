@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
@@ -28,7 +30,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductInfoResponseDto> getProductInfo(
-            @PathVariable String productId
+            @PathVariable UUID productId
     ) {
 
         return ResponseEntity.ok(
@@ -45,7 +47,7 @@ public class ProductController {
     @PutMapping("/{productId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUBCOMPANY')")
     public ResponseEntity<ProductInfoResponseDto> updateProductInfo(
-            @PathVariable String productId,
+            @PathVariable UUID productId,
             @RequestBody ProductRequestDto request
     ) {
 
@@ -56,7 +58,7 @@ public class ProductController {
     @PatchMapping("/{productId}")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUBMASTER')")
     public ResponseEntity<ProductInfoResponseDto> updateProductManagementHub(
-            @PathVariable String productId,
+            @PathVariable UUID productId,
             @RequestBody ProductHubUpdateRequestDto request
     ) {
 
@@ -66,7 +68,7 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     @PreAuthorize("hasAuthority('MASTER')")
-    public ResponseEntity<Boolean> deleteProduct(@PathVariable String productId) {
+    public ResponseEntity<Boolean> deleteProduct(@PathVariable UUID productId) {
 
         return ResponseEntity.ok(productApplicationService.deleteProduct(productId));
     }

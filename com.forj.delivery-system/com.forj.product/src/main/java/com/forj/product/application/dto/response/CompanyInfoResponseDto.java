@@ -1,10 +1,12 @@
 package com.forj.product.application.dto.response;
 
+import java.util.UUID;
+
 public record CompanyInfoResponseDto(
-        String id,
+        UUID id,
         String name,
-        String userId,
-        String managingHubId,
+        Long userId,
+        UUID managingHubId,
         String address,
         String companyType
 ) {

@@ -23,19 +23,19 @@ public class Product extends BaseEntity {
     private UUID id;
 
     private String name;
-    private String companyId;
-    private String managingHubId;
+    private UUID companyId;
+    private UUID managingHubId;
     private Integer quantity;
 
     @Builder(access = AccessLevel.PROTECTED)
-    public Product(String name, String companyId, String managingHubId, Integer quantity) {
+    public Product(String name, UUID companyId, UUID managingHubId, Integer quantity) {
         this.name = name;
         this.companyId = companyId;
         this.managingHubId = managingHubId;
         this.quantity = quantity;
     }
 
-    public static Product createProduct(String name, String companyId, String managingHubId, Integer quantity) {
+    public static Product createProduct(String name, UUID companyId, UUID managingHubId, Integer quantity) {
         return Product.builder()
                 .name(name)
                 .companyId(companyId)
@@ -49,7 +49,7 @@ public class Product extends BaseEntity {
         this.quantity = quantity;
     }
 
-    public void updateProductManagementHub(String managingHubId) {
+    public void updateProductManagementHub(UUID managingHubId) {
         this.managingHubId = managingHubId;
     }
 

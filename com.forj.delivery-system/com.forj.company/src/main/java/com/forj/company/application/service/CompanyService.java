@@ -5,7 +5,6 @@ import com.forj.company.application.dto.request.CompanyHubUpdateRequestDto;
 import com.forj.company.application.dto.request.CompanyRequestDto;
 import com.forj.company.application.dto.response.*;
 import com.forj.company.domain.model.Company;
-import com.forj.company.domain.model.CompanyType;
 import com.forj.company.infrastructure.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -44,10 +44,10 @@ public class CompanyService {
 
         Company company = Company.createCompany(
                 request.name(),
-                SecurityUtil.getCurrentUserId(),
+                Long.parseLong(Objects.requireNonNull(SecurityUtil.getCurrentUserId())),
                 nearestHub.id(),
                 geoPoint.addresses().get(0).roadAddress(),
-                CompanyType.fromString(request.companyType())
+                request.companyType()
         );
 
         Company savedCompany = companyRepository.save(company);
@@ -55,7 +55,7 @@ public class CompanyService {
         return convertCompanyToDto(savedCompany);
     }
 
-    public CompanyInfoResponseDto getCompanyInfo(String companyId) {
+    public CompanyInfoResponseDto getCompanyInfo(UUID companyId) {
 
         Company company = getCompany(companyId);
 
@@ -72,7 +72,7 @@ public class CompanyService {
 
     @Transactional
     public CompanyInfoResponseDto updateCompanyInfo(
-            String companyId, CompanyRequestDto request
+            UUID companyId, CompanyRequestDto request
     ) {
 
         Company company = getCompanyByRole(companyId);
@@ -80,7 +80,7 @@ public class CompanyService {
         company.updateCompanyInfo(
                 request.name(),
                 request.address(),
-                CompanyType.fromString(request.companyType())
+                request.companyType()
         );
 
         return convertCompanyToDto(company);
@@ -88,7 +88,7 @@ public class CompanyService {
 
     @Transactional
     public CompanyInfoResponseDto updateCompanyManagementHub(
-            String companyId, CompanyHubUpdateRequestDto request
+            UUID companyId, CompanyHubUpdateRequestDto request
     ) {
 
         Company company = getCompany(companyId);
@@ -99,7 +99,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public Boolean deleteCompany(String companyId) {
+    public Boolean deleteCompany(UUID companyId) {
 
         Company company = getCompany(companyId);
 
@@ -125,7 +125,8 @@ public class CompanyService {
     }
 
     private HubInfoResponseDto findNearestHub(
-            HubListResponseDto hubListResponseDto, double companyY, double companyX
+            HubListResponseDto hubListResponseDto,
+            double companyLatitude, double companyLongitude
     ) {
         HubInfoResponseDto nearestHub = null;
         double minDistance = Double.MAX_VALUE;
@@ -133,7 +134,8 @@ public class CompanyService {
         // hubList에서 각 HubInfoResponseDto의 좌표를 추출하여 비교
         for (HubInfoResponseDto hubInfo : hubListResponseDto.hubList()) {
             double distance = calculateDistance(
-                    companyY, companyX, hubInfo.y(), hubInfo.x()
+                    companyLatitude, companyLongitude,
+                    hubInfo.latitude(), hubInfo.longitude()
             );
             if (distance < minDistance) {
                 minDistance = distance;
@@ -167,12 +169,12 @@ public class CompanyService {
         return EARTH_RADIUS * c;
     }
 
-    private Company getCompany(String companyId) {
-        return companyRepository.findById(UUID.fromString(companyId))
+    private Company getCompany(UUID companyId) {
+        return companyRepository.findById(companyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    private Company getCompanyByRole(String companyId) {
+    private Company getCompanyByRole(UUID companyId) {
 
         String currentUserRole = SecurityUtil.getCurrentUserRoles();
 
@@ -186,7 +188,10 @@ public class CompanyService {
             }
             case "HUBCOMPANY" -> {
                 return companyRepository.findByIdAndUserId(
-                                UUID.fromString(companyId), SecurityUtil.getCurrentUserId())
+                                companyId,
+                                Long.valueOf(Objects.requireNonNull(
+                                        SecurityUtil.getCurrentUserId()))
+                        )
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             }
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -195,12 +200,12 @@ public class CompanyService {
 
     private CompanyInfoResponseDto convertCompanyToDto(Company company) {
         return new CompanyInfoResponseDto(
-                company.getId().toString(),
+                company.getId(),
                 company.getName(),
                 company.getUserId(),
                 company.getManagingHubId(),
                 company.getAddress(),
-                company.getCompanyType().name()
+                company.getCompanyType()
         );
     }
 }

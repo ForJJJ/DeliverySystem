@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "company", configuration = FeignClientConfig.class)
+@FeignClient(name = "localhost:19095", configuration = FeignClientConfig.class)
 public interface CompanyClient {
 
     @GetMapping("/api/v1/companies/{companyId}")

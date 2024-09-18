@@ -13,16 +13,4 @@ public record OrderResponseDto(
         Integer quantity,
         UUID deliveryId,
         OrderStatusEnum status
-) {
-    public static OrderResponseDto fromOrder(Order order) {
-        return new OrderResponseDto(
-                order.getOrderId(),
-                order.getRequestCompanyId(),
-                order.getReceivingCompanyId(), // 수정된 부분
-                order.getProductId(),
-                order.getQuantity(),
-                order.getDeliveryId(),
-                order.getStatus()
-        );
-    }
-}
+) {}

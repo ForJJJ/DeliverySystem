@@ -1,5 +1,6 @@
 package com.forj.delivery_history.domain.model.hubmovement;
 
+import com.forj.common.jpa.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,9 +13,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class HubMovement {
+public class HubMovement extends BaseEntity {
 
     @Id
+    private UUID id;
+
     @Column(name = "departure_hub_id")
     private UUID departureHubId;
 

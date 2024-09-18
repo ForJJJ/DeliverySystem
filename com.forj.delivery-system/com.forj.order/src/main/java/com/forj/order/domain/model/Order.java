@@ -1,5 +1,6 @@
 package com.forj.order.domain.model;
 
+import com.forj.common.jpa.BaseEntity;
 import com.forj.order.domain.enums.OrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_order")
 @Builder
-public class Order {
-
+public class Order extends BaseEntity {
 
     @Id
     @UuidGenerator
@@ -38,15 +38,13 @@ public class Order {
             UUID requestCompanyId,
             UUID receivingCompanyId,
             UUID productId,
-            Integer quantity,
-            UUID deliveryId
+            Integer quantity
     ){
         return Order.builder()
                 .requestCompanyId(requestCompanyId)
                 .receivingCompanyId(receivingCompanyId)
                 .productId(productId)
                 .quantity(quantity)
-                .deliveryId(deliveryId)
                 .status(OrderStatusEnum.PROGRESS)
                 .isdelete(false)
                 .build();
@@ -56,25 +54,21 @@ public class Order {
     public void update(
             UUID receivingCompanyId,
             UUID productId,
-            Integer quantity,
-            UUID deliveryId
+            Integer quantity
     ) {
         this.receivingCompanyId = receivingCompanyId;
         this.productId = productId;
         this.quantity = quantity;
-        this.deliveryId = deliveryId;
-    }
-
-    // 주문 삭제를 위한 setter 생성
-    public void setIsdelete(boolean isdelete) {
-        this.isdelete = isdelete;
-    }
-
-    // 주문 상태 변경을 위한 setter 생성
-    public void setStatus(OrderStatusEnum status) {
-        this.status = status;
     }
 
     // 주문 취소를 위한 메서드 생성
     public void cancelOrder(){ this.status = OrderStatusEnum.CANCELED; }
+
+    // 배송 ID 추가하기
+    public void updateDeliveryId(
+            UUID deliveryId
+    ){
+        this.deliveryId = deliveryId;
+        this.status = OrderStatusEnum.COMPLETED;
+    }
 }

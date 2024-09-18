@@ -40,7 +40,7 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(requestDto.password());
 
-        User user = User.signup(requestDto.username(), encodedPassword, requestDto.role());
+        User user = User.signup(requestDto.username(), encodedPassword, requestDto.role(), requestDto.slackId());
         userRepository.save(user);
 
     }

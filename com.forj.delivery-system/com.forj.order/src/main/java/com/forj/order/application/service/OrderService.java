@@ -1,20 +1,19 @@
 package com.forj.order.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forj.order.infrastructure.messaging.OrderCreatedEvent;
+import com.forj.common.security.SecurityUtil;
+import com.forj.order.application.dto.response.OrderListResponseDto;
+import com.forj.order.domain.service.OrderDomainService;
+import com.forj.order.infrastructure.messaging.OrderMessageProducer;
 import com.forj.order.application.dto.response.OrderResponseDto;
 import com.forj.order.domain.enums.OrderStatusEnum;
 import com.forj.order.domain.model.Order;
-import com.forj.order.domain.repostiory.OrderRepository;
 import com.forj.order.application.dto.request.OrderRequestDto;
-import com.forj.order.application.dto.request.OrderStatusRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
@@ -22,117 +21,130 @@ import java.util.UUID;
 // 기본적인 CRUD
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final ApplicationEventPublisher eventPublisher;
-
-    @Value("${message.queue.delivery}")
-    private String deliveryQueue;
-
-    private final RabbitTemplate rabbitTemplate;
+    private final OrderMessageProducer orderProductMessage;
+    private final OrderDomainService orderDomainService;
 
     // 주문 생성
-    @Transactional
     public OrderResponseDto createOrder(
-            OrderRequestDto orderRequestDto,
-            String userId
+            OrderRequestDto orderRequestDto
     ) {
-        Order order = Order.create(
-                UUID.fromString(userId),
-                orderRequestDto.getReceivingCompanyId(),
-                orderRequestDto.getProductId(),
-                orderRequestDto.getQuantity(),
-                orderRequestDto.getDeliveryId()
+        Order order = orderDomainService.create(
+                orderRequestDto.requestCompanyId(),
+                orderRequestDto.receivingCompanyId(),
+                orderRequestDto.productId(),
+                orderRequestDto.quantity()
+        );
+        log.info("[Order : OrderService] 주문 생성완료");
+        // product 쪽으로 메시징 큐 전달
+        orderProductMessage.sendToProduct(
+                order.getOrderId(),
+                order.getRequestCompanyId(),
+                order.getReceivingCompanyId(),
+                order.getProductId(),
+                order.getQuantity(),
+                SecurityUtil.getCurrentUserId(),
+                SecurityUtil.getCurrentUserRoles()
         );
 
-        Order savedOrder = orderRepository.save(order);
-
-        OrderCreatedEvent event = new OrderCreatedEvent(
-                savedOrder.getOrderId(),
-                UUID.fromString(userId),
-                savedOrder.getReceivingCompanyId(),
-                savedOrder.getDeliveryId()
-        );
-        rabbitTemplate.convertAndSend(deliveryQueue, event);
-
-
-        return OrderResponseDto.fromOrder(savedOrder);
+        return convertOrderToDto(order);
     }
 
     // 주문 단건 조회
-    @Transactional(readOnly = true)
     public OrderResponseDto getOrderById(
             UUID orderId
     ) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
-        return OrderResponseDto.fromOrder(order);
+        Order order = orderDomainService.findOrderById(
+                orderId
+        );
+        log.info("[Order : OrderService] 주문 단건 조회 완료");
+        return convertOrderToDto(order);
     }
 
     // 주문 전체 조회
+    public OrderListResponseDto getAllOrder(
+            Pageable pageable
+    ){
+        Page<Order> orders = orderDomainService.findAllOrder(pageable);
+
+        log.info("[Order : OrderService] 주문 조회 완료");
+
+        return new OrderListResponseDto(orders.map(this::convertOrderToDto));
+    }
 
     // 주문 내용 수정
-    @Transactional
     public OrderResponseDto updateOrder(
             UUID orderId,
             OrderRequestDto orderRequestDto
     ) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        Order orderById = orderDomainService.findOrderById(orderId);
 
-        order.update(
-                orderRequestDto.getReceivingCompanyId(),
-                orderRequestDto.getProductId(),
-                orderRequestDto.getQuantity(),
-                orderRequestDto.getDeliveryId()
+        if (!orderById.getCreatedBy().equals(SecurityUtil.getCurrentUserId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"수정 권한이 없습니다.");
+        }
+
+        Order order = orderDomainService.update(
+                orderId,
+                orderRequestDto.receivingCompanyId(),
+                orderRequestDto.productId(),
+                orderRequestDto.quantity()
+        );
+        log.info("[Order : OrderService] 주문 내용 수정");
+
+        // product 쪽으로 메시징 큐 전달
+        orderProductMessage.sendToProduct(
+                order.getOrderId(),
+                order.getRequestCompanyId(),
+                order.getReceivingCompanyId(),
+                order.getProductId(),
+                order.getQuantity(),
+                SecurityUtil.getCurrentUserId(),
+                SecurityUtil.getCurrentUserRoles()
         );
 
-        Order savedOrder = orderRepository.save(order);
-
-        return OrderResponseDto.fromOrder(savedOrder);
+        return convertOrderToDto(order);
     }
+
     // 주문 내역 삭제
-    @Transactional
-    public void deleteOrder(
+    public Boolean deleteOrder(
             UUID orderId
     ) {
-        Order order = orderRepository.findById(orderId)
-                .filter(o -> !o.getIsdelete())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        orderDomainService.delete(orderId);
+        log.info("[Order : OrderService] 주문 삭제 완료");
 
-        order.setIsdelete(true);
-
-        orderRepository.save(order);
-    }
-
-    // 주문 상태 변경하기
-    @Transactional
-    public void updateOrderStatus(
-            UUID orderId,
-            OrderStatusRequestDto requestDto
-    ){
-        Order order = orderRepository.findById(orderId)
-                .filter(o -> !o.getIsdelete())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
-
-        order.setStatus(OrderStatusEnum.valueOf(requestDto.getStatus()));
-
-        orderRepository.save(order);
+        return true;
     }
 
     // 주문 취소 요청하기
-    @Transactional
     public void cancelOrder(
             UUID orderId
     ){
-        Order order = orderRepository.findById(orderId)
-                .filter(o -> !o.getIsdelete())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"해당 주문은 찾을 수가 없습니다."));
+        Order order = orderDomainService.cancel(orderId);
+
         if(!order.getStatus().equals(OrderStatusEnum.PROGRESS)){
+            log.info("[Order : OrderService] 주문 취소 실패 현재 상태 : {}",order.getStatus());
             throw new IllegalArgumentException("이미 취소되었거나 주문완료가 된 상태입니다.");
         }
+        log.info("[Order : OrderService] 주문 취소 요청");
 
-        order.cancelOrder();
+        orderProductMessage.sendToProductCancel(
+                order.getOrderId(),
+                order.getProductId(),
+                order.getQuantity()
+        );
+    }
+
+    private OrderResponseDto convertOrderToDto(Order order) {
+        return new OrderResponseDto(
+                order.getOrderId(),
+                order.getRequestCompanyId(),
+                order.getReceivingCompanyId(), // 수정된 부분
+                order.getProductId(),
+                order.getQuantity(),
+                order.getDeliveryId(),
+                order.getStatus()
+        );
     }
 }

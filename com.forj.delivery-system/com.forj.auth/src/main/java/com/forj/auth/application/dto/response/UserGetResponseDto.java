@@ -9,7 +9,8 @@ public record UserGetResponseDto(
 
         Long userId,
         String username,
-        UserRole role
+        UserRole role,
+        String slackId
 
 ) {
 
@@ -18,6 +19,7 @@ public record UserGetResponseDto(
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .role(user.getRole())
+                .slackId(user.getSlackId())
                 .build();
     }
 

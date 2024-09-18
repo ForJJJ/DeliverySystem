@@ -6,5 +6,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface HubMovementRepository {
-    Optional<HubMovement> findById(UUID departureHub);
+    Optional<HubMovement> findBydepartureHubId(UUID departureHubId);
 }

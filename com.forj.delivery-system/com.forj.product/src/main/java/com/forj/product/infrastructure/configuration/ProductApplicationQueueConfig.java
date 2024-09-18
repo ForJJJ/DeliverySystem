@@ -11,50 +11,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ProductApplicationQueueConfig {
-
-    @Value("${messaging.exchanges.default}")
-    private String exchange;
-
-    @Value("${messaging.queues.product}")
-    private String queueProduct;
-
-    @Value("${messaging.queues.delivery}")
-    private String queueDelivery;
-
-    @Value("${messaging.exchanges.error}")
-    private String exchangeErr;
-
-    @Value("${messaging.queues.orderError}")
-    private String queueErrOrder;
-
     @Bean
     public Jackson2JsonMessageConverter producerJackson2MessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
-
-    @Bean
-    public TopicExchange exchange() { return new TopicExchange(exchange);}
-    @Bean
-    public Queue queueProduct() { return new Queue(queueProduct);}
-    @Bean
-    public Binding bindingProduct() {
-        return BindingBuilder.bind(queueProduct()).to(exchange()).with(queueProduct);
-    }
-    @Bean
-    public Queue queueDelivery() { return new Queue(queueDelivery);}
-    @Bean
-    public Binding bindingDelivery() {
-        return BindingBuilder.bind(queueDelivery()).to(exchange()).with(queueDelivery);
-    }
-    @Bean
-    public TopicExchange exchangeErr() { return new TopicExchange(exchangeErr);}
-    @Bean
-    public Queue queueErrOrder() { return new Queue(queueErrOrder);}
-    @Bean
-    public Binding bindingErrOrder() {
-        return BindingBuilder.bind(queueErrOrder()).to(exchangeErr()).with(queueErrOrder);
-    }
-
-
 }
 

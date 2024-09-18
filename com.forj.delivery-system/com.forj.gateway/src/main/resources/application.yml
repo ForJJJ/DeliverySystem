@@ -41,6 +41,10 @@ spring:
           uri: lb://product
           predicates:
             - Path=/api/v1/products/**
+        - id: slack-message
+          uri: lb://slack-message
+          predicates:
+            - Path=/api/v1/slacks/**
 
       discovery:
         locator:

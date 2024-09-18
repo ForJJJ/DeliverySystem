@@ -11,12 +11,12 @@ public class DeliveryEventListener {
 
     private final DeliveryHistoryService deliveryHistoryService;
 
-    @RabbitListener(queues = "${message.queue.delivery-history}")
-    public void hadleDeliveryEvent(DeliveryCreatedEvent event){
+    @RabbitListener(queues = "${message.forj.queue.delivery-history}")
+    public void hadleDeliveryEvent(DeliveryHistoryDeliveryMessage message){
         deliveryHistoryService.createDeliveryHistory(
-                event.getDeliveryAgentId(),
-                event.getStartHubId(),
-                event.getEndHubId()
+                message.deliveryAgentId(),
+                message.startHubId(),
+                message.endHubId()
         );
     }
 }

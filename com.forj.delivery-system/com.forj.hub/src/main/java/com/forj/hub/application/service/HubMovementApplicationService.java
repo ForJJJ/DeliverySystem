@@ -2,10 +2,7 @@ package com.forj.hub.application.service;
 
 import com.forj.hub.application.dto.request.HubMovementRequestDto;
 import com.forj.hub.application.dto.request.HubMovementUpdateRequestDto;
-import com.forj.hub.application.dto.response.HubInfoResponseDto;
-import com.forj.hub.application.dto.response.HubMovementInfoResponseDto;
-import com.forj.hub.application.dto.response.HubMovementListResponseDto;
-import com.forj.hub.application.dto.response.NaverDrivingResponseDto;
+import com.forj.hub.application.dto.response.*;
 import com.forj.hub.domain.model.Hub;
 import com.forj.hub.domain.model.HubMovement;
 import com.forj.hub.domain.service.HubMovementService;
@@ -13,12 +10,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -38,24 +39,61 @@ public class HubMovementApplicationService {
         HubInfoResponseDto arrivalHub = hubCacheService
                 .getHubInfo(request.arrivalHubId());
 
-        String start = getStringPoint(departureHub.x(), departureHub.y());
-        String goal = getStringPoint(arrivalHub.x(), arrivalHub.y());
+        String start = getStringPoint(departureHub.longitude(), departureHub.latitude());
+        String goal = getStringPoint(arrivalHub.longitude(), arrivalHub.latitude());
 
         Long duration = getDurationFromNaver(start, goal);
 
         HubMovement hubMovement = hubMovementService.createHubMovement(
                 convertDtoToHub(departureHub),
                 convertDtoToHub(arrivalHub),
-                duration
+                Duration.ofMillis(duration)
         );
 
         return convertHubMovementToDto(hubMovement);
     }
 
+    @Async("createHubMovement")
+    @Transactional
+    public void createHubMovementAsync(UUID departureHubId) {
+
+        HubInfoResponseDto departureHub = hubCacheService.getHubInfo(departureHubId);
+        HubListResponseDto hubsInfo = hubCacheService.getHubsInfo();
+
+        for (HubInfoResponseDto arrivalHub : hubsInfo.hubList()) {
+
+            if (departureHub.id().equals(arrivalHub.id()) ||
+                departureHub.address().equals(arrivalHub.address())) {
+                continue;
+            }
+
+            String departurePoint = getStringPoint(departureHub.longitude(), departureHub.latitude());
+            String arrivalPoint = getStringPoint(arrivalHub.longitude(), arrivalHub.latitude());
+            Long duration = getDurationFromNaver(departurePoint, arrivalPoint);
+
+            HubMovement hubMovement = hubMovementService.createHubMovement(
+                    convertDtoToHub(departureHub),
+                    convertDtoToHub(arrivalHub),
+                    Duration.ofMillis(duration)
+            );
+        }
+    }
+
     @Cacheable(value = "hubMovementCache", key = "#hubMovementId")
-    public HubMovementInfoResponseDto getHubMovementInfo(String hubMovementId) {
+    public HubMovementInfoResponseDto getHubMovementInfo(UUID hubMovementId) {
 
         HubMovement hubMovement = hubMovementService.getHubMovementInfo(hubMovementId);
+
+        return convertHubMovementToDto(hubMovement);
+    }
+
+    @Cacheable(value = "hubMovementCacheByDeparture", key = "#departureHubId")
+    public HubMovementInfoResponseDto getHubMovementInfoByDepartureHub(
+            UUID departureHubId
+    ) {
+
+        HubMovement hubMovement =
+                hubMovementService.getHubMovementInfoByDepartureHub(departureHubId);
 
         return convertHubMovementToDto(hubMovement);
     }
@@ -72,9 +110,12 @@ public class HubMovementApplicationService {
                 hubMovements.map(this::convertHubMovementToDto));
     }
 
-    @CacheEvict(cacheNames = "hubMovementCache", key = "#hubMovementId")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "hubMovementCache", key = "#hubMovementId"),
+            @CacheEvict(value = "hubMovementCacheByDeparture", key = "#result.departureHubId()")
+    })
     public HubMovementInfoResponseDto updateHubMovementInfo(
-            String hubMovementId, HubMovementUpdateRequestDto request
+            UUID hubMovementId, HubMovementUpdateRequestDto request
     ) {
         
         HubMovement hubMovement = hubMovementService
@@ -83,33 +124,38 @@ public class HubMovementApplicationService {
         return convertHubMovementToDto(hubMovement);
     }
 
-    @CacheEvict(cacheNames = "hubMovementCache", key = "#hubMovementId")
-    public HubMovementInfoResponseDto updateHubMovementDuration(String hubMovementId) {
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "hubMovementCache", key = "#hubMovementId"),
+            @CacheEvict(value = "hubMovementCacheByDeparture", key = "#result.departureHubId()")
+    })
+    public HubMovementInfoResponseDto updateHubMovementDuration(UUID hubMovementId) {
 
         HubMovement hubMovement = hubMovementService.getHubMovementInfo(hubMovementId);
-        
+        HubInfoResponseDto departureHub = hubCacheService.getHubInfo(hubMovement.getDepartureHubId());
+        HubInfoResponseDto arrivalHub = hubCacheService.getHubInfo(hubMovement.getArrivalHubId());
+
         String start = getStringPoint(
-                hubMovement.getDepartureHub().getLongitude(),
-                hubMovement.getDepartureHub().getLatitude()
+                departureHub.longitude(),
+                departureHub.latitude()
         );
 
         String goal = getStringPoint(
-                hubMovement.getArrivalHub().getLongitude(),
-                hubMovement.getArrivalHub().getLatitude()
+                arrivalHub.longitude(),
+                arrivalHub.latitude()
         );
 
         NaverDrivingResponseDto routeInfo = naverGeoClient.getRouteInfo(start, goal);
 
         HubMovement updatedHubMovement = hubMovementService.updateHubMovementDuration(
                 hubMovement,
-                routeInfo.route().traoptimal().get(0).summary().duration()
+                Duration.ofSeconds(routeInfo.route().traoptimal().get(0).summary().duration())
         );
 
         return convertHubMovementToDto(updatedHubMovement);
     }
 
     @CacheEvict(cacheNames = "hubMovementCache", key = "#hubMovementId")
-    public Boolean deleteHubMovement(String hubMovementId) {
+    public Boolean deleteHubMovement(UUID hubMovementId) {
 
         hubMovementService.deleteHubMovement(hubMovementId);
 
@@ -139,11 +185,11 @@ public class HubMovementApplicationService {
 
     private Hub convertDtoToHub(HubInfoResponseDto dto) {
         return Hub.toHubEntityWithId(
-                UUID.fromString(dto.id()),
+                dto.id(),
                 dto.name(),
                 dto.address(),
-                dto.x(),
-                dto.y()
+                dto.longitude(),
+                dto.latitude()
         );
     }
 
@@ -151,10 +197,10 @@ public class HubMovementApplicationService {
             HubMovement hubMovement
     ) {
         return new HubMovementInfoResponseDto(
-                hubMovement.getId().toString(),
-                hubMovement.getDepartureHub().getId().toString(),
-                hubMovement.getArrivalHub().getId().toString(),
-                hubMovement.getDuration().toString(),
+                hubMovement.getId(),
+                hubMovement.getDepartureHubId(),
+                hubMovement.getArrivalHubId(),
+                hubMovement.getDuration(),
                 hubMovement.getRoute()
         );
     }

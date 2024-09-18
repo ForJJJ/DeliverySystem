@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -19,7 +20,7 @@ public class HubCacheService {
     private final HubService hubService;
 
     @Cacheable(value = "hubCache", key = "#hubId")
-    public HubInfoResponseDto getHubInfo(String hubId) {
+    public HubInfoResponseDto getHubInfo(UUID hubId) {
 
         log.info("Hub info from database for hubId : {}", hubId);
 
@@ -43,7 +44,7 @@ public class HubCacheService {
 
     private HubInfoResponseDto convertHubToDto(Hub hub) {
         return HubInfoResponseDto.forPrivateResponse(
-                hub.getId().toString(),
+                hub.getId(),
                 hub.getName(),
                 hub.getAddress(),
                 hub.getLongitude(),

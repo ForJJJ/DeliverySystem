@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -31,12 +33,23 @@ public class HubMovementController {
 
     @GetMapping("/{hubMovementId}")
     public ResponseEntity<HubMovementInfoResponseDto> getHubMovementInfo(
-            @PathVariable String hubMovementId
+            @PathVariable UUID hubMovementId
     ) {
 
         return ResponseEntity.ok(
                 hubMovementApplicationService.getHubMovementInfo(hubMovementId));
     }
+
+    @GetMapping("/departure/{departureHubId}")
+    public ResponseEntity<HubMovementInfoResponseDto> getHubMovementInfoByDepartureHub(
+            @PathVariable UUID departureHubId
+    ) {
+        return ResponseEntity.ok(
+                hubMovementApplicationService
+                        .getHubMovementInfoByDepartureHub(departureHubId)
+        );
+    }
+
 
     @GetMapping
     public ResponseEntity<HubMovementListResponseDto> getHubMovementListInfo(
@@ -52,7 +65,7 @@ public class HubMovementController {
     @PutMapping("/{hubMovementId}")
     @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<HubMovementInfoResponseDto> updateHubMovementInfo(
-            @PathVariable String hubMovementId,
+            @PathVariable UUID hubMovementId,
             @RequestBody HubMovementUpdateRequestDto request
             ) {
 
@@ -63,7 +76,7 @@ public class HubMovementController {
     @PatchMapping("/{hubMovementId}")
     @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<HubMovementInfoResponseDto> updateHubMovementDuration(
-            @PathVariable String hubMovementId
+            @PathVariable UUID hubMovementId
     ) {
 
         return ResponseEntity.ok(
@@ -73,7 +86,7 @@ public class HubMovementController {
     @DeleteMapping("/{hubMovementId}")
     @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<Boolean> deleteHubMovement(
-            @PathVariable String hubMovementId
+            @PathVariable UUID hubMovementId
     ) {
 
         return ResponseEntity.ok(

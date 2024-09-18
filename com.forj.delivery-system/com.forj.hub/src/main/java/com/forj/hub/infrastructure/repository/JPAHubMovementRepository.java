@@ -13,4 +13,6 @@ public interface JPAHubMovementRepository extends JpaRepository<HubMovement, UUI
 
     @Query("SELECT h FROM HubMovement h WHERE LOWER(h.route) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<HubMovement> findAllBySearch(@Param("search") String search, Pageable pageable);
+
+    HubMovement findByDepartureHubId(UUID departureHubId);
 }

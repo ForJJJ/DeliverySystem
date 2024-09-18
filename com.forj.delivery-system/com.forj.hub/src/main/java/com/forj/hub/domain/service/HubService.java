@@ -27,9 +27,9 @@ public class HubService {
     }
 
     @Transactional(readOnly = true)
-    public Hub getHubInfo(String hubId) {
+    public Hub getHubInfo(UUID hubId) {
 
-        return hubRepository.findByIdAndIsDeletedFalse(UUID.fromString(hubId));
+        return hubRepository.findByIdAndIsDeletedFalse(hubId);
     }
 
     @Transactional(readOnly = true)
@@ -39,9 +39,9 @@ public class HubService {
     }
 
     @Transactional
-    public Hub updateHubInfo(String hubId, String name, String address, Double x, Double y) {
+    public Hub updateHubInfo(UUID hubId, String name, String address, Double x, Double y) {
 
-        Hub hub = hubRepository.findById(UUID.fromString(hubId));
+        Hub hub = hubRepository.findById(hubId);
 
         hub.updateHub(name, address, x, y);
 
@@ -49,9 +49,9 @@ public class HubService {
     }
 
     @Transactional
-    public Boolean deleteHub(String hubId) {
+    public Boolean deleteHub(UUID hubId) {
 
-        Hub hub = hubRepository.findById(UUID.fromString(hubId));
+        Hub hub = hubRepository.findById(hubId);
 
         hub.delete(SecurityUtil.getCurrentUserId());
 

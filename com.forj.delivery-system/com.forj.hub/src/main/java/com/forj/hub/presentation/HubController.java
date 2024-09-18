@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/hubs")
@@ -42,7 +44,7 @@ public class HubController {
      */
     @GetMapping("/{hubId}")
     public ResponseEntity<HubInfoResponseDto> getHubInfo(
-            @PathVariable String hubId,
+            @PathVariable UUID hubId,
             @RequestHeader(value = "X-Server-Request", required = false) String serverRequest
     ) {
 
@@ -77,7 +79,7 @@ public class HubController {
     @PatchMapping("/{hubId}")
     @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<HubInfoResponseDto> updateHubInfo(
-            @PathVariable String hubId,
+            @PathVariable UUID hubId,
             @RequestBody HubRequestDto request
             ) {
         return ResponseEntity.ok(hubApplicationService.updateHubInfo(hubId, request));
@@ -92,7 +94,7 @@ public class HubController {
     @DeleteMapping("/{hubId}")
     @PreAuthorize("hasAuthority('MASTER')")
     public ResponseEntity<Boolean> deleteHub(
-            @PathVariable String hubId
+            @PathVariable UUID hubId
     ) {
         return ResponseEntity.ok(hubApplicationService.deleteHub(hubId));
     }

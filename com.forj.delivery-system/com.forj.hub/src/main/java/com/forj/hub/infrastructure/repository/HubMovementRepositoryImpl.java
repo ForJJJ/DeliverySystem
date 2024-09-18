@@ -31,4 +31,9 @@ public class HubMovementRepositoryImpl implements HubMovementRepository {
     public Page<HubMovement> findAllBySearch(String search, Pageable pageable) {
         return jpaHubMovementRepository.findAllBySearch(search, pageable);
     }
+
+    @Override
+    public HubMovement findByDepartureHubId(UUID departureHubId) {
+        return jpaHubMovementRepository.findByDepartureHubId(departureHubId);
+    }
 }

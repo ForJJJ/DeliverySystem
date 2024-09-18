@@ -31,7 +31,7 @@ public class DeliveryAgentController {
     }
 
     @GetMapping("/{deliveryAgentId}")
-    @PreAuthorize("hasAuthority('DELIVERYAGENT')")
+    @PreAuthorize("hasAnyAuthority('DELIVERYAGENT', 'MASTER')")
     public ResponseEntity<DeliveryAgentGetResponseDto> getDeliveryAgent(@PathVariable Long deliveryAgentId) {
         DeliveryAgentGetResponseDto deliveryAgent = deliveryAgentService.getDeliveryAgent(deliveryAgentId);
         return ResponseEntity.status(HttpStatus.OK).body(deliveryAgent);

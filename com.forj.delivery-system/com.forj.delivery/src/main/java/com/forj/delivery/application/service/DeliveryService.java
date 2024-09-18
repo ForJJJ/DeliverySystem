@@ -10,6 +10,7 @@ import com.forj.delivery.application.dto.response.DeliveryListResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryResponseDto;
 import com.forj.delivery.application.dto.response.UserResponseDto;
 import com.forj.delivery.domain.model.Delivery;
+import com.forj.delivery.domain.repository.DeliveryRepository;
 import com.forj.delivery.domain.service.DeliveryDomainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,9 +30,10 @@ import java.util.UUID;
 @Slf4j
 public class DeliveryService {
 
-    private final DeliveryDomainService deliveryDomainService;
-    private final CompanyClient companyClient;
+    private final DeliveryRepository deliveryRepository;
     private final UserClient userClient;
+    private final CompanyClient companyClient;
+    private final DeliveryDomainService deliveryDomainService;
 
 
     // 배송 생성 -> 주문이 들어옴과 동시에 생성
@@ -154,4 +157,13 @@ public class DeliveryService {
                 delivery.getSlackId()
         );
     }
+
+    public List<Delivery> getDeliveriesByDeliveryAgentId(Long deliveryAgentId) {
+        return deliveryRepository.findByDeliveryAgentId(deliveryAgentId);
+    }
+
+    public long getDeliveriesByAgentIdAndTimeRange(Long deliveryAgentId, UUID hubId, LocalDateTime startTime, LocalDateTime endTime) {
+        return deliveryRepository.countByDeliveryAgentIdAndStartHubIdAndCreatedAtBetween(deliveryAgentId, hubId, startTime, endTime);
+    }
+
 }

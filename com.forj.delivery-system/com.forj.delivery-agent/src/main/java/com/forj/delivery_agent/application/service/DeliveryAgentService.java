@@ -30,7 +30,8 @@ public class DeliveryAgentService {
     }
 
     public DeliveryAgentGetResponseDto getDeliveryAgent(Long deliveryAgentId) {
-        DeliveryAgent deliveryAgent = verifyByDeliveryAgentId(deliveryAgentId);
+        DeliveryAgent deliveryAgent = deliveryAgentRepository.findByDeliveryAgentId(deliveryAgentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "배송담당자가 아닙니다."));
 
         return DeliveryAgentGetResponseDto.fromEntity(deliveryAgent);
     }

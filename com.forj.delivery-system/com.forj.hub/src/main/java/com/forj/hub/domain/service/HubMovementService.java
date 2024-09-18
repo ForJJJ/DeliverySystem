@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -23,21 +24,27 @@ public class HubMovementService {
     private final HubMovementRepository hubMovementRepository;
 
     @Transactional
-    public HubMovement createHubMovement(Hub departureHub, Hub arrivalHub, Long duration) {
+    public HubMovement createHubMovement(Hub departureHub, Hub arrivalHub, Duration duration) {
 
         String routeName = getRouteName(departureHub, arrivalHub);
 
         HubMovement hubMovement = HubMovement.createHubMovement(
-                departureHub, arrivalHub, duration, routeName
+                departureHub.getId(), arrivalHub.getId(), duration, routeName
         );
 
         return hubMovementRepository.save(hubMovement);
     }
 
     @Transactional(readOnly = true)
-    public HubMovement getHubMovementInfo(String hubMovementId) {
+    public HubMovement getHubMovementInfo(UUID hubMovementId) {
 
-        return hubMovementRepository.findById(UUID.fromString(hubMovementId));
+        return hubMovementRepository.findById(hubMovementId);
+    }
+
+    @Transactional(readOnly = true)
+    public HubMovement getHubMovementInfoByDepartureHub(UUID departureHubId) {
+
+        return hubMovementRepository.findByDepartureHubId(departureHubId);
     }
 
     @Transactional(readOnly = true)
@@ -47,10 +54,10 @@ public class HubMovementService {
     }
 
     @Transactional
-    public HubMovement updateHubMovementInfo(String hubMovementId, String route) {
+    public HubMovement updateHubMovementInfo(UUID hubMovementId, String route) {
 
         HubMovement hubMovement = hubMovementRepository
-                .findById(UUID.fromString(hubMovementId));
+                .findById(hubMovementId);
 
         hubMovement.updateHubMovementInfo(route);
 
@@ -58,7 +65,9 @@ public class HubMovementService {
     }
 
     @Transactional
-    public HubMovement updateHubMovementDuration(HubMovement hubMovement, Long duration) {
+    public HubMovement updateHubMovementDuration(
+            HubMovement hubMovement, Duration duration
+    ) {
 
         hubMovement.updateDuration(duration);
 
@@ -66,10 +75,10 @@ public class HubMovementService {
     }
 
     @Transactional
-    public void deleteHubMovement(String hubMovementId) {
+    public void deleteHubMovement(UUID hubMovementId) {
 
         HubMovement hubMovement = hubMovementRepository
-                .findById(UUID.fromString(hubMovementId));
+                .findById(hubMovementId);
         hubMovement.delete(getCurrentUserId());
     }
 

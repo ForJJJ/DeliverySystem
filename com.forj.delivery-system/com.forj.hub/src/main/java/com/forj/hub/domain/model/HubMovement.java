@@ -1,5 +1,6 @@
 package com.forj.hub.domain.model;
 
+import com.forj.common.jpa.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Getter
@@ -19,35 +21,29 @@ public class HubMovement extends BaseEntity {
     @UuidGenerator
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "departure_hub_id")
-    private Hub departureHub;
-
-    @ManyToOne
-    @JoinColumn(name = "arrival_hub_id")
-    private Hub arrivalHub;
-
-    private Long duration;
+    private UUID departureHubId;
+    private UUID arrivalHubId;
+    private Duration duration;
     private String route;
 
     @Builder(access = AccessLevel.PROTECTED)
-    public HubMovement(Hub departureHub, Hub arrivalHub, Long duration, String route) {
-        this.departureHub = departureHub;
-        this.arrivalHub = arrivalHub;
+    public HubMovement(UUID departureHubId, UUID arrivalHubId, Duration duration, String route) {
+        this.departureHubId = departureHubId;
+        this.arrivalHubId = arrivalHubId;
         this.duration = duration;
         this.route = route;
     }
 
-    public static HubMovement createHubMovement(Hub departureHub, Hub arrivalHub, Long duration, String route) {
+    public static HubMovement createHubMovement(UUID departureHubId, UUID arrivalHubId, Duration duration, String route) {
         return HubMovement.builder()
-                .departureHub(departureHub)
-                .arrivalHub(arrivalHub)
+                .departureHubId(departureHubId)
+                .arrivalHubId(arrivalHubId)
                 .duration(duration)
                 .route(route)
                 .build();
     }
 
-    public void updateDuration(Long duration) {
+    public void updateDuration(Duration duration) {
         this.duration = duration;
     }
 

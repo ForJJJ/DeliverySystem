@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class HubApplicationService {
 
     private final HubService hubService;
     private final HubCacheService hubCacheService;
+    private final HubMovementApplicationService hubMovementApplicationService;
     private final NaverGeoClient naverGeoClient;
 
     @CachePut(value = "hubCache", key = "#result.id")
@@ -38,10 +41,12 @@ public class HubApplicationService {
                 Double.parseDouble(addressDto.y())
         );
 
+//        hubMovementApplicationService.createHubMovementAsync(hub.getId());
+
         return convertHubToDto(hub);
     }
 
-    public HubInfoResponseDto getHubInfo(String hubId, boolean isPrivate) {
+    public HubInfoResponseDto getHubInfo(UUID hubId, boolean isPrivate) {
 
         HubInfoResponseDto hubInfo = hubCacheService.getHubInfo(hubId);
 
@@ -70,7 +75,7 @@ public class HubApplicationService {
     }, put = {
             @CachePut(cacheNames = "hubCache", key = "#result.id")
     })
-    public HubInfoResponseDto updateHubInfo(String hubId, HubRequestDto request) {
+    public HubInfoResponseDto updateHubInfo(UUID hubId, HubRequestDto request) {
 
         NaverGeoPointResponseDto geoPointResponseDto = getAddressWithGeoPoint(request);
         AddressDto addressDto = geoPointResponseDto.addresses().get(0);
@@ -90,11 +95,9 @@ public class HubApplicationService {
             @CacheEvict(cacheNames = "hubCache", key = "#hubId"),
             @CacheEvict(cacheNames = "hubCache", key = "'allHubs'")
     })
-    public Boolean deleteHub(String hubId) {
+    public Boolean deleteHub(UUID hubId) {
 
-        hubService.deleteHub(hubId);
-
-        return true;
+        return hubService.deleteHub(hubId);
     }
 
     private NaverGeoPointResponseDto getAddressWithGeoPoint(HubRequestDto request) {
@@ -115,7 +118,7 @@ public class HubApplicationService {
 
     private HubInfoResponseDto convertHubToDto(Hub hub) {
         return HubInfoResponseDto.forPrivateResponse(
-                hub.getId().toString(),
+                hub.getId(),
                 hub.getName(),
                 hub.getAddress(),
                 hub.getLongitude(),

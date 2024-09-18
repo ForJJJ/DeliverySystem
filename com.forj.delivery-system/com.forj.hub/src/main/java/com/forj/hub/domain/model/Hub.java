@@ -1,5 +1,6 @@
 package com.forj.hub.domain.model;
 
+import com.forj.common.jpa.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -22,10 +23,10 @@ public class Hub extends BaseEntity {
     private double longitude;
     private double latitude;
 
-    @OneToMany(mappedBy = "departureHub")
+    @OneToMany(mappedBy = "departureHubId")
     private List<HubMovement> departureHubs;
 
-    @OneToMany(mappedBy = "arrivalHub")
+    @OneToMany(mappedBy = "arrivalHubId")
     private List<HubMovement> arrivalHubs;
 
     @Builder(access = AccessLevel.PROTECTED)

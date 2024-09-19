@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -72,6 +74,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = verifyByUserId(userId);
+
+        if (!Objects.equals(userId, getCurrentUserId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "본인이 아닙니다.");
+        }
+
+        user.delete(String.valueOf(userId));
+    }
+
     public Page<UserSearchResponseDto> searchUser(String usernameKeyword, String roleKeyword, Pageable pageable) {
         if (usernameKeyword != null && roleKeyword != null) {
             return userRepository.findByUsernameContainingAndRole(usernameKeyword, UserRole.valueOf(roleKeyword), pageable)
@@ -90,6 +103,7 @@ public class UserService {
 
     private User verifyUsername(String username, String password) {
         User user = userRepository.findByUsername(username)
+                .filter(o -> !o.isDeleted())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -101,6 +115,7 @@ public class UserService {
 
     private User verifyByUserId(Long userId) {
         return userRepository.findById(userId)
+                .filter(o -> !o.isDeleted())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."));
     }
 

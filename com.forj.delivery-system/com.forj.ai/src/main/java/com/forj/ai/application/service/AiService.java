@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.forj.ai.application.dto.response.AiHistoryResponseDto;
+import com.forj.ai.application.dto.response.SlackMessageResponseDto;
 import com.forj.ai.domain.model.Ai;
 import com.forj.ai.domain.model.RequestType;
 import com.forj.ai.domain.repository.AiRepository;
@@ -45,28 +46,18 @@ public class AiService {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
+    @Value("${openWeather.api.key}")
+    private String openWeatherApiKey;
+
     // 배송담당자(업체)에게 보낼 정보 요청하기
-    public String requestForCompanyDeliveryAgent(Long deliveryAgentId, String appid) {
-        DeliveryAgentDto deliveryAgentDto = deliveryAgentServiceClient.getHubIdByDeliveryAgentId(deliveryAgentId);
-        HubDto hubDto = hubServiceClient.getNxNyByHubId(deliveryAgentDto.hubId(), "true");
-        List<DeliveryDto> deliveries = deliveryServiceClient.getDeliveriesByDeliveryAgentId(deliveryAgentId);
+    public List<SlackMessageResponseDto> getInfoForCompanyDeliveryAgents() {
+        // 업체 배송 담당자들의 목록 가져오기
+        List<DeliveryAgentDto> deliveryAgents = deliveryAgentServiceClient.getAllDeliveryAgentsByCompanyRole();
 
-        double longitude = hubDto.longitude();
-        double latitude = hubDto.latitude();
-        String weatherData = getWeather(appid, longitude, latitude);
-
-        String summaryRequest = createSummaryRequestForCompany(deliveries, weatherData);
-
-        String aiResponse = summarizeWithGemini(summaryRequest, geminiApiKey);
-
-        Ai aiHistory = Ai.createRequestHistory(deliveryAgentId,
-                RequestType.FOR_COMPANY_DELIVERY_AGENT,
-                summaryRequest,
-                aiResponse);
-
-        aiRepository.save(aiHistory);
-
-        return aiResponse;
+        // 각 담당자에 대한 요약 메시지 요청
+        return deliveryAgents.stream()
+                .map(this::getInfoForCompanyDeliveryAgent)
+                .collect(Collectors.toList());
     }
 
     // 배송담당자(허브)에게 보낼 정보 요청하기
@@ -108,31 +99,35 @@ public class AiService {
 
     // -------------------------------------------------------------------------------------------------------------
 
-    // 기상청 api - service key 안먹힘
-//    private String getWeather(String serviceKey, double nx, double ny) {
-//        String baseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-//        String baseTime = LocalTime.of(17, 0).format(DateTimeFormatter.ofPattern("HHmm"));
-//
-//        String uri = UriComponentsBuilder.fromUriString("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst")
-//                .queryParam("serviceKey", serviceKey)
-//                .queryParam("pageNo", "1")
-//                .queryParam("numOfRows", "1")
-//                .queryParam("dataType", "JSON")
-//                .queryParam("base_date", baseDate) // 오늘 날짜
-//                .queryParam("base_time", baseTime) // 아침 6시
-//                .queryParam("nx", nx) // X 좌표
-//                .queryParam("ny", ny) // Y 좌표
-//                .build()
-//                .toUriString();
-//
-//        return restTemplate.getForObject(uri, String.class);
-//
-//    }
+    // 업체 배송 담당자(개별) 정보 생성
+    private SlackMessageResponseDto getInfoForCompanyDeliveryAgent(DeliveryAgentDto deliveryAgentDto) {
+        // 배송 담당자의 허브 정보와 위치 정보 가져오기
+        HubDto hubDto = hubServiceClient.getLonLatByHubId(deliveryAgentDto.hubId(), "true");
+
+        // 허브 위치 기반 날씨 정보 가져오기
+        double longitude = hubDto.longitude();
+        double latitude = hubDto.latitude();
+        String weatherData = getWeather(longitude, latitude);
+
+        // 배송 담당자의 PENDING 상태 배송 정보 가져오기
+        List<DeliveryDto> deliveries = deliveryServiceClient.getPendingDeliveries();
+
+        // 요약 메시지 생성
+        String summaryRequest = createSummaryRequestForCompany(deliveries, weatherData);
+        String aiResponse = summarizeWithGemini(summaryRequest, geminiApiKey);
+
+        // AI 응답 저장
+        Ai aiHistory = Ai.createRequestHistory(deliveryAgentDto.deliveryAgentId(), RequestType.FOR_COMPANY_DELIVERY_AGENT, summaryRequest, aiResponse);
+        aiRepository.save(aiHistory);
+
+        // SlackMessageRequestDto로 반환
+        return new SlackMessageResponseDto(deliveryAgentDto.deliveryAgentId(), aiResponse);
+    }
 
     // 날씨 정보 가져오기
-    private String getWeather(String appid, double longitude, double latitude) {
+    private String getWeather(double longitude, double latitude) {
         String uri = UriComponentsBuilder.fromUriString("http://api.openweathermap.org/data/2.5/forecast")
-                .queryParam("appid", appid)
+                .queryParam("appid", openWeatherApiKey)
                 .queryParam("lon", longitude)
                 .queryParam("lat", latitude)
                 .queryParam("lang", "kr")
@@ -178,7 +173,7 @@ public class AiService {
                 .distinct()
                 .collect(Collectors.joining(", "));
 
-        return String.format("%s 날씨랑 배송 건수: %d건, 배송지 주소: %s 이 내용들을 요약해줘", weatherData, deliveryCount, endAddresses);
+        return String.format("%s 날씨랑 배송 건수: %d건, 배송지 주소: %s 이 내용들을 간단하게 요약해줘", weatherData, deliveryCount, endAddresses);
     }
 
     // gemini에게 보낼 요청 내용(허브배송담당자)
@@ -196,11 +191,9 @@ public class AiService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Jackson ObjectMapper를 사용하여 JSON 객체를 생성
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 요청 본문을 Gemini API 문서에 맞게 수정
-        // 예시: {"contents": [{"parts": [{"text": "요약 내용"}]}]}
         ObjectNode contentNode = objectMapper.createObjectNode();
         contentNode.put("text", summaryRequest);
 
@@ -210,12 +203,24 @@ public class AiService {
         ObjectNode contentsNode = objectMapper.createObjectNode();
         contentsNode.set("contents", objectMapper.createArrayNode().add(partsNode));
 
-        String requestBody = contentsNode.toString(); // JSON 객체를 문자열로 변환
+        String requestBody = contentsNode.toString();
 
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-        return restTemplate.postForObject(geminiApiUrl, requestEntity, String.class);
+        String response = restTemplate.postForObject(geminiApiUrl, requestEntity, String.class);
+
+        try {
+            // 응답을 JSON으로 파싱하여 필요한 "text"만 추출
+            JsonNode root = objectMapper.readTree(response);
+            JsonNode textNode = root.path("candidates").get(0)
+                    .path("content").path("parts").get(0)
+                    .path("text");
+
+            return textNode.asText();
+
+        } catch (Exception e) {
+            log.error("Error parsing AI response: ", e);
+            return "AI 응답을 처리하는 데 오류가 발생했습니다.";
+        }
     }
-
-
 
 }

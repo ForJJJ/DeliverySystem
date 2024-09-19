@@ -3,6 +3,7 @@ package com.forj.delivery_agent.application.service;
 import com.forj.delivery_agent.application.dto.request.DeliveryAgentRequestDto;
 import com.forj.delivery_agent.application.dto.response.DeliveryAgentGetResponseDto;
 import com.forj.delivery_agent.domain.model.DeliveryAgent;
+import com.forj.delivery_agent.domain.model.DeliveryAgentRole;
 import com.forj.delivery_agent.domain.repository.DeliveryAgentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +45,13 @@ public class DeliveryAgentService {
         DeliveryAgent deliveryAgent = verifyByDeliveryAgentId(userId);
 
         deliveryAgent.updateDeliveryAgent(requestDto.hubId(), requestDto.role());
+    }
+
+    public List<DeliveryAgentGetResponseDto> getAllDeliveryAgentsByCompanyRole() {
+        List<DeliveryAgent> deliveryAgents = deliveryAgentRepository.findByAgentRole(DeliveryAgentRole.COMPANYDELIVERY);
+        return deliveryAgents.stream()
+                .map(DeliveryAgentGetResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     private DeliveryAgent verifyByDeliveryAgentId(Long deliveryAgentId) {

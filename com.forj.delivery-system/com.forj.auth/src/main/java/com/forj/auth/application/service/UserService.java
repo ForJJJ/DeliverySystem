@@ -100,14 +100,8 @@ public class UserService {
     }
 
     private User verifyByUserId(Long userId) {
-        User user = userRepository.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."));
-
-        if (!user.getUserId().equals(getCurrentUserId())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 정보만 접근 가능합니다.");
-        }
-
-        return user;
     }
 
     private Long getCurrentUserId() {

@@ -14,8 +14,8 @@ import java.util.UUID;
 @FeignClient(name = "delivery", configuration = FeignConfig.class)
 public interface DeliveryServiceClient {
 
-    @GetMapping("/api/v1/deliveries/{deliveryAgentId}/deliveryInfo")
-    List<DeliveryDto> getDeliveriesByDeliveryAgentId(@PathVariable Long deliveryAgentId);
+    @GetMapping("/api/v1/deliveries/deliveryInfo")
+    List<DeliveryDto> getPendingDeliveries();
 
     @GetMapping("/api/v1/deliveries/{deliveryAgentId}/deliveryCount")
     Long getDeliveriesByAgentIdAndTimeRange(@PathVariable("deliveryAgentId") Long deliveryAgentId,

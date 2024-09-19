@@ -4,13 +4,19 @@ import com.forj.delivery.application.dto.request.DriverAssignRequestDto;
 import com.forj.delivery.application.dto.response.DeliveryListResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryResponseDto;
 import com.forj.delivery.application.service.DeliveryService;
-import com.forj.delivery.domain.model.Delivery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -67,9 +73,10 @@ public class DeliveryController {
         deliveryService.assignDelivery(requestDto);
     }
 
-    @GetMapping("/{deliveryAgentId}/deliveryInfo")
-    public ResponseEntity<List<Delivery>> getDeliveriesByDeliveryAgentId(@PathVariable Long deliveryAgentId) {
-        return ResponseEntity.status(HttpStatus.OK).body(deliveryService.getDeliveriesByDeliveryAgentId(deliveryAgentId));
+    @GetMapping("/deliveryInfo")
+    public ResponseEntity<List<DeliveryResponseDto>> getPendingDeliveries() {
+        List<DeliveryResponseDto> pendingDeliveries = deliveryService.getPendingDeliveries();
+        return ResponseEntity.ok(pendingDeliveries);
     }
 
     @GetMapping("/{deliveryAgentId}/deliveryCount")

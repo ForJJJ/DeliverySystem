@@ -16,10 +16,6 @@ public class FeignConfig {
         return new RequestInterceptor() {
             @Override
             public void apply(RequestTemplate requestTemplate) {
-                String token = getCurrentUserToken();
-                if (token != null) {
-                    requestTemplate.header("Authorization", "Bearer " + token);
-                }
                 String userId = getCurrentUserId();
                 if (userId != null) {
                     requestTemplate.header("X-User-Id", userId);
@@ -30,19 +26,6 @@ public class FeignConfig {
                 }
             }
         };
-    }
-
-    public String getCurrentUserToken() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes != null) {
-            HttpServletRequest request = attributes.getRequest();
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                System.out.println("authHeader : " + authHeader);
-                return authHeader.substring(7);
-            }
-        }
-        return null;
     }
 
     private String getCurrentUserId() {

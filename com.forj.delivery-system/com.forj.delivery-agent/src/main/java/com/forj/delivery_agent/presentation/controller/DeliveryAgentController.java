@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/delivery-agents")
 @RequiredArgsConstructor
@@ -42,6 +44,13 @@ public class DeliveryAgentController {
     public ResponseEntity<Void> updateDeliveryAgent(@PathVariable Long deliveryAgentId, @RequestBody DeliveryAgentRequestDto requestDto) {
         deliveryAgentService.updateDeliveryAgent(deliveryAgentId, requestDto);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/info")
+    @PreAuthorize("hasAuthority('MASTER')")
+    public ResponseEntity<List<DeliveryAgentGetResponseDto>> getAllDeliveryAgentsByCompanyRole() {
+        List<DeliveryAgentGetResponseDto> agents = deliveryAgentService.getAllDeliveryAgentsByCompanyRole();
+        return ResponseEntity.status(HttpStatus.OK).body(agents);
     }
 
 }

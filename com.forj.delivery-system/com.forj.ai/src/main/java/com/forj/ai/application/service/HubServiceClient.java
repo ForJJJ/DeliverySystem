@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface HubServiceClient {
 
     @GetMapping("/api/v1/hubs/{hubId}")
-    HubDto getNxNyByHubId(@PathVariable UUID hubId,
-                          @RequestHeader(value = "X-Server-Request", required = false)String serverRequest);
+    HubDto getLonLatByHubId(@PathVariable UUID hubId,
+                            @RequestHeader(value = "X-Server-Request", required = false) String serverRequest);
 
 }

@@ -8,7 +8,7 @@ import com.forj.delivery.application.dto.request.DriverAssignRequestDto;
 import com.forj.delivery.application.dto.response.CompanyInfoResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryListResponseDto;
 import com.forj.delivery.application.dto.response.DeliveryResponseDto;
-import com.forj.delivery.application.dto.response.UserResponseDto;
+import com.forj.delivery.domain.enums.DeliveryStatusEnum;
 import com.forj.delivery.domain.model.Delivery;
 import com.forj.delivery.domain.repository.DeliveryRepository;
 import com.forj.delivery.domain.service.DeliveryDomainService;
@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +32,11 @@ import java.util.UUID;
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+
     private final UserClient userClient;
+
     private final CompanyClient companyClient;
+
     private final DeliveryDomainService deliveryDomainService;
 
 
@@ -44,11 +48,11 @@ public class DeliveryService {
             String userId,
             String role
     ) {
-        log.info("현재 userId 값 : {}",userId);
+        log.info("현재 userId 값 : {}", userId);
         // 출발 허브 id 찾기
-        CompanyInfoResponseDto startCompany = companyClient.getCompanyInfo(role,startCompanyId.toString());
+        CompanyInfoResponseDto startCompany = companyClient.getCompanyInfo(role, startCompanyId.toString());
         // 도착 허브 id 찾기
-        CompanyInfoResponseDto endCompany = companyClient.getCompanyInfo(role,endCompanyId.toString());
+        CompanyInfoResponseDto endCompany = companyClient.getCompanyInfo(role, endCompanyId.toString());
 
         deliveryDomainService.create(
                 orderId,
@@ -71,7 +75,7 @@ public class DeliveryService {
     // 주문 Id로 배송 조회
     public DeliveryResponseDto getFindByOrderId(
             UUID orderId
-    ){
+    ) {
         Delivery delivery = deliveryDomainService.findOrderById(orderId);
 
         return convertDeliveryToDto(delivery);
@@ -80,22 +84,23 @@ public class DeliveryService {
     // 배송 전체 조회
     public DeliveryListResponseDto getAllDelivery(
             Pageable pageable
-    ){
+    ) {
         Page<Delivery> deliveries = deliveryDomainService.findAllDelivery(pageable);
 
         log.info("[Delivery : DeliveryService] 주문 조회 완료");
 
         return new DeliveryListResponseDto(deliveries.map(this::convertDeliveryToDto));
     }
+
     // 배송 내용 수정 (배달 기사님 ID 정보만 수정가능)
     public DeliveryResponseDto updateDelivery(
             UUID deliveryId,
             DeliveryUpdateRequestDto requestDto
-    ){
+    ) {
         Delivery deliveryById = deliveryDomainService.findDeliveryById(deliveryId);
 
         if (!deliveryById.getCreatedBy().equals(SecurityUtil.getCurrentUserId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"수정 권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
 
         Delivery delivery = deliveryDomainService.update(
@@ -108,6 +113,7 @@ public class DeliveryService {
 
         return convertDeliveryToDto(delivery);
     }
+
     // 배송 삭제
     public Boolean deleteDelivery(
             UUID deliveryId
@@ -121,7 +127,7 @@ public class DeliveryService {
     // 배송 완료시 상태 값 변경
     public void deliveryComplete(
             Long deliveryAgentId
-    ){
+    ) {
         log.info("Delivery Agent Id: {}", deliveryAgentId);
 
         deliveryDomainService.deliveryComplete(deliveryAgentId);
@@ -130,7 +136,7 @@ public class DeliveryService {
     // 배송 기사님 여러개 배송 등록하기
     public void assignDelivery(
             DriverAssignRequestDto requestDto
-    ){
+    ) {
         List<UUID> deliveryIds = requestDto.deliveryIds();
 
         // 배송 요청 정보를 저장할 리스트
@@ -140,7 +146,7 @@ public class DeliveryService {
                 Long.valueOf(SecurityUtil.getCurrentUserId()),
                 deliveryIds,
                 deliveriesToAssign
-                );
+        );
 
     }
 
@@ -158,8 +164,11 @@ public class DeliveryService {
         );
     }
 
-    public List<Delivery> getDeliveriesByDeliveryAgentId(Long deliveryAgentId) {
-        return deliveryRepository.findByDeliveryAgentId(deliveryAgentId);
+    public List<DeliveryResponseDto> getPendingDeliveries() {
+        return deliveryRepository.findAllByStatusAndCreatedAtAfter(DeliveryStatusEnum.PENDING, LocalDateTime.now().minusDays(1).withHour(6))
+                .stream()
+                .map(DeliveryResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public long getDeliveriesByAgentIdAndTimeRange(Long deliveryAgentId, UUID hubId, LocalDateTime startTime, LocalDateTime endTime) {

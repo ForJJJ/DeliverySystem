@@ -1,8 +1,8 @@
 package com.forj.slack_message.application.dto.request;
 
-public record SlackMessageRequestDto(
+public record SlackMessageResponseDto(
 
-        Long userId,
+        Long deliveryAgentId,
         String message
 
 ) {

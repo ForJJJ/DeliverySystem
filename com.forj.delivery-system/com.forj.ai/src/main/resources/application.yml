@@ -25,3 +25,9 @@ eureka:
 
 server:
   port: 19101
+
+logging:
+  level:
+    com.example: DEBUG
+    org.springframework.web: DEBUG
+    feign: DEBUG

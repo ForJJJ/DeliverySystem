@@ -1,10 +1,7 @@
 package com.forj.hub.application.service;
 
 import com.forj.hub.application.dto.request.HubRequestDto;
-import com.forj.hub.application.dto.response.AddressDto;
-import com.forj.hub.application.dto.response.HubInfoResponseDto;
-import com.forj.hub.application.dto.response.HubListResponseDto;
-import com.forj.hub.application.dto.response.NaverGeoPointResponseDto;
+import com.forj.hub.application.dto.response.*;
 import com.forj.hub.domain.model.Hub;
 import com.forj.hub.domain.service.HubService;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
@@ -28,6 +28,7 @@ public class HubApplicationService {
     private final HubMovementApplicationService hubMovementApplicationService;
     private final NaverGeoClient naverGeoClient;
 
+    @Transactional
     @CachePut(value = "hubCache", key = "#result.id")
     public HubInfoResponseDto createHub(HubRequestDto request) {
 
@@ -41,7 +42,7 @@ public class HubApplicationService {
                 Double.parseDouble(addressDto.y())
         );
 
-//        hubMovementApplicationService.createHubMovementAsync(hub.getId());
+        hubMovementApplicationService.addNewHubMovement(hub.getId());
 
         return convertHubToDto(hub);
     }
@@ -91,13 +92,38 @@ public class HubApplicationService {
         return convertHubToDto(hub);
     }
 
+    @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "hubCache", key = "#hubId"),
             @CacheEvict(cacheNames = "hubCache", key = "'allHubs'")
     })
     public Boolean deleteHub(UUID hubId) {
 
+        HubInfoResponseDto hubInfo = hubCacheService.getHubInfo(hubId);
+
+        deleteAllHubMovements(hubInfo.name());
+
         return hubService.deleteHub(hubId);
+    }
+
+    private void deleteAllHubMovements(String hubName) {
+        int page = 0;
+        int size = 100;
+        boolean hasNext = true;
+
+        while (hasNext) {
+            Pageable pageable = PageRequest.of(page, size);
+
+            HubMovementListResponseDto hubMovementListInfo =
+                    hubMovementApplicationService.getHubMovementListInfo(hubName, pageable);
+            hubMovementListInfo.hubMovementList().forEach(hubMovement -> {
+
+                hubMovementApplicationService.deleteHubMovement(hubMovement.id());
+            });
+
+            hasNext = hubMovementListInfo.hubMovementList().hasNext();
+            page++;
+        }
     }
 
     private NaverGeoPointResponseDto getAddressWithGeoPoint(HubRequestDto request) {

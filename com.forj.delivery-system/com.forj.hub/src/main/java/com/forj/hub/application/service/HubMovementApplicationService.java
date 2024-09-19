@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -39,10 +40,7 @@ public class HubMovementApplicationService {
         HubInfoResponseDto arrivalHub = hubCacheService
                 .getHubInfo(request.arrivalHubId());
 
-        String start = getStringPoint(departureHub.longitude(), departureHub.latitude());
-        String goal = getStringPoint(arrivalHub.longitude(), arrivalHub.latitude());
-
-        Long duration = getDurationFromNaver(start, goal);
+        Long duration = calculateDurationBetweenHubs(arrivalHub, departureHub);
 
         HubMovement hubMovement = hubMovementService.createHubMovement(
                 convertDtoToHub(departureHub),
@@ -67,9 +65,7 @@ public class HubMovementApplicationService {
                 continue;
             }
 
-            String departurePoint = getStringPoint(departureHub.longitude(), departureHub.latitude());
-            String arrivalPoint = getStringPoint(arrivalHub.longitude(), arrivalHub.latitude());
-            Long duration = getDurationFromNaver(departurePoint, arrivalPoint);
+            Long duration = calculateDurationBetweenHubs(arrivalHub, departureHub);
 
             HubMovement hubMovement = hubMovementService.createHubMovement(
                     convertDtoToHub(departureHub),
@@ -160,6 +156,86 @@ public class HubMovementApplicationService {
         hubMovementService.deleteHubMovement(hubMovementId);
 
         return true;
+    }
+
+    public void addNewHubMovement(UUID hubId) {
+
+        HubInfoResponseDto newHubInfo = hubCacheService.getHubInfo(hubId);
+        HubListResponseDto  existingHubsInfo = hubCacheService.getHubsInfo();
+
+        HubInfoResponseDto[] bestInsertPosition =
+                findBestInsertPosition(newHubInfo, existingHubsInfo.hubList());
+        HubInfoResponseDto previousHub = bestInsertPosition[0];
+        HubInfoResponseDto nextHub = bestInsertPosition[1];
+
+        // 기존 허브 간 연결 정보 제거 (previousHub -> nextHub)
+        HubMovement hubMovementInfoByDepartureHub =
+                hubMovementService.getHubMovementInfoByDepartureHub(previousHub.id());
+        hubMovementService.deleteHubMovement(hubMovementInfoByDepartureHub.getId());
+
+        Long durationToNewHub = calculateDurationBetweenHubs(newHubInfo, previousHub);
+        Long durationFromNewHub = calculateDurationBetweenHubs(nextHub, newHubInfo);
+
+        // 새 허브 삽입 후 경로 생성 (previousHub -> newHub -> nextHub)
+        hubMovementService.createHubMovement(
+                convertDtoToHub(previousHub),
+                convertDtoToHub(newHubInfo),
+                Duration.ofMillis(durationToNewHub)
+        );
+        hubMovementService.createHubMovement(
+                convertDtoToHub(newHubInfo),
+                convertDtoToHub(nextHub),
+                Duration.ofMillis(durationFromNewHub)
+        );
+    }
+
+    private HubInfoResponseDto[] findBestInsertPosition
+            (HubInfoResponseDto newHub, List<HubInfoResponseDto> existingHubs
+            ) {
+        double minExtraDistance = Double.MAX_VALUE;
+        HubInfoResponseDto[] hubArr = new HubInfoResponseDto[2];
+
+        for (int i = 0; i < existingHubs.size(); i++) {
+
+            if (newHub.id().equals(existingHubs.get(i).id())) {
+                continue;
+            }
+
+            HubMovement hubMovementInfoByDepartureHub = hubMovementService
+                    .getHubMovementInfoByDepartureHub(existingHubs.get(i).id());
+
+            HubInfoResponseDto departureHub = hubCacheService
+                    .getHubInfo(hubMovementInfoByDepartureHub.getDepartureHubId());
+            HubInfoResponseDto arrivalHub = hubCacheService
+                    .getHubInfo(hubMovementInfoByDepartureHub.getArrivalHubId());
+
+            log.info("departureHub : {}, arrivalHub : {}",
+                    departureHub.name(), arrivalHub.name()
+            );
+
+            long currentDistance = hubMovementInfoByDepartureHub.getDuration().toMillis();
+
+            Long durationToNewHub = calculateDurationBetweenHubs(newHub, departureHub);
+            Long durationFromNewHub = calculateDurationBetweenHubs(arrivalHub, newHub);
+
+            long newDistance = durationToNewHub + durationFromNewHub;
+
+            // 거리가 최소인 위치를 선택
+            if (newDistance - currentDistance < minExtraDistance) {
+                minExtraDistance = newDistance - currentDistance;
+                hubArr[0] = departureHub;
+                hubArr[1] = arrivalHub;
+            }
+        }
+        return hubArr;
+    }
+
+    private Long calculateDurationBetweenHubs(
+            HubInfoResponseDto arrivalHub, HubInfoResponseDto departureHub
+    ) {
+        String start = getStringPoint(departureHub.longitude(), departureHub.latitude());
+        String goal = getStringPoint(arrivalHub.longitude(), arrivalHub.latitude());
+        return getDurationFromNaver(start, goal);
     }
 
     private String getStringPoint(double longitude, double latitude) {

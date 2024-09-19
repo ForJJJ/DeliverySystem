@@ -18,7 +18,6 @@ public class HubService {
 
     private final HubRepository hubRepository;
 
-    @Transactional
     public Hub createHub(String name, String roadAddress, double x, double y) {
 
         Hub hub = Hub.toHubEntity(name, roadAddress, x, y);
@@ -48,7 +47,6 @@ public class HubService {
         return hub;
     }
 
-    @Transactional
     public Boolean deleteHub(UUID hubId) {
 
         Hub hub = hubRepository.findById(hubId);

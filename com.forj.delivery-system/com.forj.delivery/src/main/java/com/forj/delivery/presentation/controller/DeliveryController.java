@@ -74,12 +74,14 @@ public class DeliveryController {
     }
 
     @GetMapping("/deliveryInfo")
+    @PreAuthorize("hasAnyAuthority('MASTER')")
     public ResponseEntity<List<DeliveryResponseDto>> getPendingDeliveries() {
         List<DeliveryResponseDto> pendingDeliveries = deliveryService.getPendingDeliveries();
         return ResponseEntity.ok(pendingDeliveries);
     }
 
     @GetMapping("/{deliveryAgentId}/deliveryCount")
+    @PreAuthorize("hasAnyAuthority('MASTER')")
     public ResponseEntity<Long> getDeliveriesByAgentIdAndTimeRange(@PathVariable("deliveryAgentId") Long deliveryAgentId,
                                                                    @RequestParam("hubId") UUID hubId,
                                                                    @RequestParam("startTime") LocalDateTime startTime,

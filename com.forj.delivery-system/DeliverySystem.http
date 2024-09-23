@@ -1,0 +1,80 @@
+@jwt_token = Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6Ik1BU1RFUiIsImV4cCI6MTcyNjgxNTI5MSwiaWF0IjoxNzI2ODExNjkxfQ.beQ0YrOlOui3Kq9TGGlcWxLkcDPONVGVJ_bc1F-Ifh7uSk5bId2mmotFSdcu90PoGTMTmH5SFryffEDNF_9rIg
+
+### 회원가입
+POST http://localhost:19091/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "username":"ttlcc131",
+  "password":"!@Jisung751",
+  "role":"MASTER",
+  "slackId":"ttlcc1312"
+}
+
+### 로그인
+POST http://localhost:19091/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username":"ttlcc13",
+  "password":"!@Jisung75"
+}
+
+###제품
+@productId=11ced8e2-cf69-46ce-9a01-a6bfa3e5bb4a
+
+### 제품 조회
+GET http://localhost:19091/api/v1/products/{{productId}}
+Authorization: {{jwt_token}}
+
+### 주문 생성
+POST http://localhost:19091/api/v1/orders
+Authorization: {{jwt_token}}
+Content-Type: application/json
+
+{
+  "requestCompanyId": "2602e860-1f62-4772-b4b6-31a13f92f51e",
+  "receivingCompanyId": "48f7f984-f86a-4e80-b137-a934705d0c96",
+  "productId": "{{productId}}",
+  "quantity": 5
+}
+### 주문 아이디
+@orderId=f339d089-233d-4541-a751-dd0b78a934c3
+
+### 제품 조회
+GET http://localhost:19091/api/v1/products/{{productId}}
+Authorization: {{jwt_token}}
+
+### 주문 아이디로 배송 확인하기
+GET http://localhost:19091/api/v1/deliveries/orders/{{orderId}}
+Authorization: {{jwt_token}}
+
+### 배송 아이디
+@deliveryId=5b4a91a3-2814-46cf-9fb4-46798076f539
+
+### 배송잡기
+POST http://localhost:19091/api/v1/deliveries/assign
+Authorization: {{jwt_token}}
+Content-Type: application/json
+
+{
+  "deliveryIds":[
+    "{{deliveryId}}"
+  ]
+}
+
+### 주문 조회
+GET http://localhost:19091/api/v1/orders/{{orderId}}
+Authorization: {{jwt_token}}
+
+### 배송 확인하기
+GET http://localhost:19091/api/v1/deliveries/{{deliveryId}}
+Authorization: {{jwt_token}}
+
+### 중간 지점 도착완료
+PUT http://localhost:19091/api/v1/delivery-histories/arrive
+Authorization: {{jwt_token}}
+
+### 해당 배송건 조회하기
+GET http://localhost:19091/api/v1/deliveries/{{deliveryId}}
+Authorization: {{jwt_token}}

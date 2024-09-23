@@ -5,5 +5,6 @@ import java.util.UUID;
 public record DeliveryHistoryDeliveryMessage(
     Long deliveryAgentId,
     UUID startHubId,
-    UUID endHubId
+    UUID endHubId,
+    String role
 ) {}

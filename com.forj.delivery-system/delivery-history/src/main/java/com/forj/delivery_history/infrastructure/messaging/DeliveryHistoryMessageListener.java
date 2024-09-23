@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class DeliveryEventListener {
+public class DeliveryHistoryMessageListener {
 
     private final DeliveryHistoryService deliveryHistoryService;
 
@@ -16,7 +16,8 @@ public class DeliveryEventListener {
         deliveryHistoryService.createDeliveryHistory(
                 message.deliveryAgentId(),
                 message.startHubId(),
-                message.endHubId()
+                message.endHubId(),
+                message.role()
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.forj.delivery_history.domain.model.deliveryhistory;
+package com.forj.delivery_history.domain.model;
 
 import com.forj.common.jpa.BaseEntity;
 import com.forj.delivery_history.domain.enums.DeliveryHistoryStatusEnum;

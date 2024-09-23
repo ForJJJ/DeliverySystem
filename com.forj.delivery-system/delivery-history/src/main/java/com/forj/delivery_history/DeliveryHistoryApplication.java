@@ -2,8 +2,10 @@ package com.forj.delivery_history;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
+@EnableFeignClients
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.forj.common", "com.forj.queue","com.forj.delivery_history"})
 public class DeliveryHistoryApplication {

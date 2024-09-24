@@ -1,0 +1,35 @@
+server:
+  port: 19095
+
+spring:
+  application:
+    name: company
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+feign:
+  naver:
+    id: ${CLIENT_ID}
+    secret: ${CLIENT_SECRET}
+    url: ${NAVER_URL}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+  instance:
+    preferIpAddress: true

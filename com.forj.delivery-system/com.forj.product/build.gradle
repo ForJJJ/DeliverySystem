@@ -1,0 +1,8 @@
+dependencies {
+	implementation project(':common')
+	implementation project(':queue')
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	runtimeOnly 'org.postgresql:postgresql'
+}

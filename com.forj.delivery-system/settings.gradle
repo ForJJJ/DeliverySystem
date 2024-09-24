@@ -1,1 +1,32 @@
 rootProject.name = 'delivery-system'
+
+include('auth',
+        'delivery',
+        'hub',
+        'order',
+        'server',
+        'gateway',
+        'company',
+        'delivery-agent',
+        'common',
+        'product',
+        'slack-message',
+        'queue',
+        'delivery-history',
+        'ai'
+)
+
+project(':auth').projectDir = file('com.forj.auth')
+project(':delivery').projectDir = file('com.forj.delivery')
+project(':hub').projectDir = file('com.forj.hub')
+project(':order').projectDir = file('com.forj.order')
+project(':server').projectDir = file('com.forj.server')
+project(':gateway').projectDir = file('com.forj.gateway')
+project(':company').projectDir = file('com.forj.company')
+project(':delivery-agent').projectDir = file('com.forj.delivery-agent')
+project(':slack-message').projectDir = file('com.forj.slack-message')
+project(':common').projectDir = file('com.forj.common')
+project(':product').projectDir = file('com.forj.product')
+project(':queue').projectDir = file('com.forj.queue')
+project(':delivery-history').projectDir = file('delivery-history')
+project(':ai').projectDir = file('com.forj.ai')

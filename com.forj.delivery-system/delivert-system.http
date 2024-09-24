@@ -1,0 +1,68 @@
+@jwtToken = Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwicm9sZSI6Ik1BU1RFUiIsImV4cCI6MTcyNjc2MTQ3MCwiaWF0IjoxNzI2NzU3ODcwfQ._oJGPWnpbtyDtxFZht1qZV7Vusp4iQIFiceN-t2Zvvv96Qh4x9uHSIyrQXdLpBsY-I22XPUPyodlk_nFDIjZDA
+@role = MASTER
+
+### 로그인
+POST http://localhost:19092/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username":"ttlcc13",
+  "password":"!@Jisung75"
+}
+
+### 상품 조회
+GET http://localhost:19096/api/v1/products
+Authorization: {{jwtToken}}
+X-User-Role: {{role}}
+X-User-Id: 1
+
+### 주문 생성
+POST http://localhost:19097/api/v1/orders
+Authorization: {{jwtToken}}
+Content-Type: application/json
+X-User-Role: {{role}}
+X-User-Id: 1
+
+{
+  "requestCompanyId": "2602e860-1f62-4772-b4b6-31a13f92f51e",
+  "receivingCompanyId": "d9bbd9f1-b54a-4cef-af67-5bd4515a40c8",
+  "productId": "11ced8e2-cf69-46ce-9a01-a6bfa3e5bb4a",
+  "quantity": 1234
+}
+
+### 주문 조회
+GET http://localhost:19096/api/v1/products/a329868d-dabe-4786-8a30-9cddacaa25a6
+Authorization: {{jwtToken}}
+X-User-Role: {{role}}
+X-User-Id: 1
+
+### 배달 기사님 배송건 조회
+GET http://localhost:19098/api/v1/deliveries
+Authorization: {{jwtToken}}
+X-User-Role: {{role}}
+X-User-Id: 1
+
+### 배달 기사님 배송 잡기
+POST http://localhost:19098/api/v1/deliveries/assign
+Authorization: {{jwtToken}}
+Content-Type: application/json
+X-User-Role: {{role}}
+X-User-Id: 1
+
+{
+  "deliveryIds":[
+    "55e06acc-9288-47d7-a0b0-c69784cf46a4"
+  ]
+}
+
+### 배달 기사님 허브 도착 API
+PUT http://localhost:19099/api/v1/delivery-histories/arrive
+Authorization: {{jwtToken}}
+X-User-Role: {{role}}
+X-User-Id: 1
+
+### 배송 ID로 배달 완료 되었는지 확인하기
+GET http://localhost:19099/api/v1/delivery-histories/arrive
+Authorization: {{jwtToken}}
+X-User-Role: {{role}}
+X-User-Id: 1

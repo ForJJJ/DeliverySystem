@@ -1,0 +1,52 @@
+server:
+  port: 19098
+
+spring:
+  application:
+    name: delivery
+  datasource:
+    url: ${DATABASE_URL_DELIVERY}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+  instance:
+    preferIpAddress: true
+
+message:
+  forj:
+    exchange: ${MESSAGE_FORJ_EXCHANGE}
+    queue:
+      product: ${MESSAGE_QUEUE_FORJ_PRODUCT}
+      delivery: ${MESSAGE_QUEUE_FORJ_DELIVERY}
+      delivery-history: ${MESSAGE_QUEUE_FORJ_DELIVERY_HISTORY}
+  complete:
+    exchange: ${MESSAGE_COMPLETE_EXCHANGE}
+    queue:
+      delivery: ${MESSAGE_QUEUE_COMPLETE_DELIVERY}
+      order: ${MESSAGE_QUEUE_COMPLETE_ORDER}
+  cancel:
+    exchange: ${MESSAGE_CANCEL_EXCHANGE}
+    queue:
+      product: ${MESSAGE_QUEUE_CANCEL_PRODUCT}
+  error:
+    exchange: ${MESSAGE_ERROR_EXCHANGE}
+    queue:
+      order: ${MESSAGE_QUEUE_ERROR_ORDER}

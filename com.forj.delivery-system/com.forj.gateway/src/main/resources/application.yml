@@ -1,0 +1,64 @@
+server:
+  port: 19091  # 게이트웨이 서비스가 실행될 포트 번호
+
+spring:
+  main:
+    web-application-type: reactive  # Spring 애플리케이션이 리액티브 웹 애플리케이션으로 설정됨
+  application:
+    name: gateway-service  # 애플리케이션 이름을 'gateway-service'로 설정
+  cloud:
+    gateway:
+      routes:  # Spring Cloud Gateway의 라우팅 설정
+        - id: auth  # 라우트 식별자
+          uri: lb://auth  # 'auth'라는 이름으로 로드 밸런싱된 서비스로 라우팅
+          predicates:
+            - Path=/api/v1/auth/** # 경로로 들어오는 요청을 이 라우트로 처리
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/api/v1/users/**
+        - id: order
+          uri: lb://order
+          predicates:
+            - Path=/api/v1/orders/**
+        - id: hub
+          uri: lb://hub
+          predicates:
+            - Path=/api/v1/hubs/**, /api/v1/hub-movements/**
+        - id: delivery
+          uri: lb://delivery
+          predicates:
+            - Path=/api/v1/deliveries/**
+        - id: company
+          uri: lb://company
+          predicates:
+            - Path=/api/v1/companies/**
+        - id: delivery-agent
+          uri: lb://delivery-agent
+          predicates:
+            - Path=/api/v1/delivery-agents/**
+        - id: product
+          uri: lb://product
+          predicates:
+            - Path=/api/v1/products/**
+        - id: slack-message
+          uri: lb://slack-message
+          predicates:
+            - Path=/api/v1/slacks/**
+        - id: ai
+          uri: lb://ai
+          predicates:
+            - Path=/api/v1/ais/**
+
+      discovery:
+        locator:
+          enabled: true  # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
+
+  config:
+    import:
+      - optional:classpath:application-jwt.yml
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/  # Eureka 서버의 URL을 지정
